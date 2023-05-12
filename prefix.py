@@ -18,16 +18,23 @@ import os
 #When you call the key within your code use this :  openai.api_key = st.secrets['path']
 
 
-openai.api_key_path = st.secrets['OPENAI_API_KEY'] 
+# os.getenv("OPENAI_API_KEY") = st.secrets['OPENAI_API_KEY'] 
 
 
 
 # option#2 : Environmental variable 
 
 #using option#2 env variable 
-#openai.api_key = os.getenv("OPENAI_API_KEY")
+# openai.api_key = st.secrets['OPENAI_API_KEY']
 
-#openai.api_key_path = 'key.env'
+# st.write("Secret Key", st.secrets["OPENAI_API_KEY"])
+
+# st.write(
+#     "Has environment variables been set:",
+#     os.environ["OPENAI_API_KEY"] == st.secrets["OPENAI_API_KEY"],
+# )
+
+# openai.api_key_path = 'OPENAI_API_KEY.env'
 
 # option#3 hard code the key 
 #openai.api_key = 'xxxxxxxxxxxxxxxxxxxx'
@@ -37,20 +44,27 @@ openai.api_key_path = st.secrets['OPENAI_API_KEY']
 
 # Define Streamlit app layout
 st.title("Prefixed Chat")
-prefix_context = st.selectbox("Select Context", ["Medical Treatments", "Pathophysiology", "Patient Safety"])
+prefix_context = st.radio("Pick your persona:", ("Master Clinician", "Medical Scientist", "Medications", "Patient Safety Expert"))
 
 def set_prefix():
-    if prefix_context == "Medical Treatments":
-        prefix = """According to the latest evidence-based guidelines 
-                and high-impact medical literature, and by performing a 
-                final step by step review of the response as an expert clinician, 
-                please answer the following:"""
-    elif prefix_context == "Pathophysiology":
+    if prefix_context == "Master Clinician":
+        prefix = """Take on the role of a master clinician explaining step by step to an expert clinician who is not quite at your level yet. 
+                Ensure you apply the latest available evidence-based guidelines 
+                and high-impact medical literature to answer the question posed by the less expert physician. Then, perform a 
+                final step by step review of your preliminary response to ensure it is factual and complete when
+                finalizing your answer to the following question: """
+    elif prefix_context == "Medical Scientist":
         prefix = """According to the latest scientific 
                 and high-impact medical literature, and by performing a 
                 final step by step review of the response as a senior research scientist, 
                 please answer the following:"""
-    elif prefix_context == "Patient Safety":
+                
+    elif prefix_context == "Medications":
+        prefix = """According to the latest scientific 
+                and high-impact medical literature, and by performing a 
+                final step by step review of the response as a senior research scientist, 
+                please answer the following:"""
+    elif prefix_context == "Patient Safety Expert":
         prefix = """According to the latest patient safety and quality improvement guidelines  
                 and high-impact medical literature, and by performing a 
                 final step by step review of the response as a patient safety expert, 
@@ -60,19 +74,35 @@ def set_prefix():
     return prefix
 
 
+
+
+
+
 # Define function to explain code using OpenAI Codex
 def answer_using_prefix(prefix, my_ask):
-    model_engine = "text-davinci-003" # Change to the desired OpenAI model
-    prompt = f"{prefix} + \n\n{my_ask}"
-    response = openai.Completion.create(
-        engine=model_engine,
-        prompt=prompt,
-        max_tokens=tokens,
-        n=1,
-        stop=None,
-        temperature=temperature,
+    completion = openai.ChatCompletion.create( # Change the function Completion to ChatCompletion
+    model = 'gpt-3.5-turbo',
+    messages = [ # Change the prompt parameter to the messages parameter
+            {'role': 'user', 'content': prefix + my_ask}
+    ],
+    temperature = 0  
     )
-    return response.choices[0].text
+    return completion # Change how you access the message content
+    
+    
+    
+    
+    # model_engine = "gpt-3.5-turbo" # Change to the desired OpenAI model
+    # prompt = f"{prefix} + \n\n{my_ask}"
+    # response = openai.ChatCompletion.create(
+    #     model='gpt-3.5-turbo',
+    #     prompt=prompt,
+    #     max_tokens=tokens,
+    #     n=1,
+    #     stop=None,
+    #     temperature=temperature,
+    # )
+    # return response.choices[0].text
 
 # Temperature and token slider
 temperature = st.sidebar.slider(
@@ -90,8 +120,11 @@ tokens = st.sidebar.slider(
     step=64
 )
 # Define Streamlit app behavior
-my_ask = st.text_input('My own question', 'Enter your own question here.')
+my_ask = st.text_input('Ask away!', '')
 prefix = set_prefix()
 if st.button("Explain"):
     output_text = answer_using_prefix(prefix, my_ask)
-    st.text_area("Code Explanation", output_text)
+    # st.write("Answer", output_text)
+    
+    
+    st.write(output_text['choices'][0]['message']['content']) # Change how you access the message content
