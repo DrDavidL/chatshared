@@ -85,7 +85,7 @@ def answer_using_prefix(prefix, my_ask):
     messages = [ # Change the prompt parameter to the messages parameter
             {'role': 'user', 'content': prefix + my_ask}
     ],
-    temperature = 0  
+    temperature = temperature,   
     )
     return completion # Change how you access the message content
     
@@ -112,13 +112,13 @@ temperature = st.sidebar.slider(
     value=0.3,
     step=0.1
 )
-tokens = st.sidebar.slider(
-    "Tokens",
-    min_value=64,
-    max_value=4096,
-    value=2048,
-    step=64
-)
+# tokens = st.sidebar.slider(
+#     "Tokens",
+#     min_value=64,
+#     max_value=4096,
+#     value=2048,
+#     step=64
+# )
 # Define Streamlit app behavior
 my_ask = st.text_input('Ask away!', '')
 prefix = set_prefix()
