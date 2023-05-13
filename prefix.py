@@ -267,7 +267,7 @@ def clear_text():
 # Define function to explain code using OpenAI Codex
 @st.cache_data
 def answer_using_prefix(prefix, sample_question, sample_answer, my_ask, temperature):
-    history_context = "Use these preceding questions to help set context: \n" + "\n".join(st.session_state.history) + "now, for the current question: \n"
+    history_context = "Use these preceding questions (already answered) to help set context: \n" + "\n".join(st.session_state.history) + "now, for the current question: \n"
     completion = openai.ChatCompletion.create( # Change the function Completion to ChatCompletion
     model = 'gpt-3.5-turbo',
     messages = [ # Change the prompt parameter to the messages parameter
