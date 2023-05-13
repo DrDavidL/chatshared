@@ -65,7 +65,19 @@ def set_prefix():
                 Ensure you apply the latest available scientific research
                 from high-impact scientific and medical literature when answering the question. Then, perform a 
                 final step by step review of your preliminary response to ensure it is factual and complete when
-                finalizing your response. """                
+                finalizing your response. """
+    elif prefix_context == "Hematologist for your Clotting Questions":
+        prefix = """Respond as an experienced attending physician board certified hematologist explaining step by step to a junior physician who is not at your level yet. 
+                Ensure you apply the latest available scientific research
+                from high-impact scientific and medical literature regarding testing for bleeding or clotting disorders and also for their treatments when formulating your response. Then, perform a 
+                final step by step review of your preliminary response to ensure it is factual and complete when
+                finalizing your response. """      
+    elif prefix_context == "Infectious Diseases Physician for your Complex ID Questions":
+        prefix = """Respond as an experienced attending physician board certified in infectious diseases explaining step by step to a junior physician who is not at your level yet. 
+                Ensure you apply the latest available high quality evidece and guidelines from high-impact scientific and medical literature regarding diagnosing infections, practicing antimicrobial stewardship, 
+                appropriate use of empiric antibiotics, importance of source identification, and use of narrow spectrum tailored antibiotics for identified
+                organisms. Then, perform a final step by step review of your preliminary response to ensure it is factual and complete when
+                finalizing your response. """                 
     elif prefix_context == "Medication Questions from Prescribers":
         prefix = """Respond as a senior experienced pharmacist with extensive knowledge of pharmacology who advises physicians on the best medications to use 
                 for clinical situations and how to dose them correctly. Ensure you apply the latest available prescribing
@@ -82,7 +94,8 @@ def set_prefix():
     return prefix
 
 prefix_context = st.radio("Pick your setting:", 
-                          ("Master Clinician Explaining to Junior Clinician", "Senior Researcher Explaining to Junior Researcher", "Medication Questions from Prescribers", 
+                          ("Master Clinician Explaining to Junior Clinician", "Senior Researcher Explaining to Junior Researcher", 
+                           "Hematologist for your Clotting Questions", "Infectious Diseases Physician for your Complex ID Questions", "Medication Questions from Prescribers", 
                            "Patient Safety Expert Assesses Risks", "Just a Chat with ChatGPT", "Your Option to Set a Context for the Conversation"))
 
 prefix = set_prefix()
@@ -96,6 +109,7 @@ def clear_text():
 
 
 # Define function to explain code using OpenAI Codex
+@st.cache_data
 def answer_using_prefix(prefix, my_ask):
     history_context = "Use these preceding questions to help set context: \n" + "\n".join(st.session_state.history) + "now, for the current question: \n"
     completion = openai.ChatCompletion.create( # Change the function Completion to ChatCompletion
