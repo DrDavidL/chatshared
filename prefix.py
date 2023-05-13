@@ -335,7 +335,7 @@ if st.button("Enter"):
 
 if st.sidebar.button("Clear Memory of Current Conversation"):
     st.session_state.history = []
-    st.sidebar.write("History Cleared)")
+    st.sidebar.write("History Cleared!")
 
 st.button("Clear Input Field", on_click=clear_text)
 
