@@ -50,7 +50,8 @@ if 'output_history' not in st.session_state:
 
 # Define Streamlit app layout
 st.title("Prompted Chat")
-
+st.sidebar.write("Updated 5/13/2023")
+st.sidebar.write("David Liebovitz, MD Northwestern University")
 
 def set_prefix():
     if prefix_context == "Master Clinician Explaining to Junior Clinician":
