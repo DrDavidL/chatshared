@@ -276,14 +276,14 @@ with tab1:
         mcq_completion = openai.ChatCompletion.create(
             model ='gpt-3.5-turbo',
             messages = [
-                {'role': 'system', 'content': "You are a board certified expert physician in " + specialty + """ and you are asked to generate unique, never before seen, board exam level multiple choice questions. All outputs should be modified for markdown formatting with bullets, bolding, and italics where appropriate
+                {'role': 'system', 'content': "You are a board certified expert physician in " + specialty + """ and you are asked to generate unique, never before seen, board exam level multiple choice questions. You do not repeat questions and you pick topics at random from the full breadth of the given specialty. All outputs should be modified for markdown formatting with bullets, bolding, and italics where appropriate
                  You rely fully on the latest evidence based findings and terminology from the most recent clinical guidelines and consensus statements. Then, you follow best practices in question design avoiding clues in the stem wording, avoiding negative wording, and avoiding absolute terms like always or never, avoiding 
                  tricky wording, and avoiding all of the above or none of the above as answer choices. You also follow best practices in answer choice design by making sure the correct answer is
                     the same length as the distractors, and that the distractors are plausible. You also make sure that the correct answer is not the longest or shortest answer. You also make sure that the correct answer is not the most or least specific answer.
                     You also make sure that the correct answer is not the most or least inclusive answer. Perform a final step by step review of your response to ensure it is factual and based on evidence based consensus guidelines and is accurate and complete when finalizing your response.
                  """},
                 {'role': 'assistant', 'content': sample_board_mcq},
-                {'role': 'user', 'content': f'Please generate {number_of_mcqs} multiple choice question(s) with answer explanations at a board exam level for {specialty} using the above template modified to textwrap at 100 characters. Also, use bullets, bolding, and italics where appropriate. Perform a final step by step review of your preliminary response to ensure it is uses current terminology and is accurate and evidence based when finalizing your response.'}
+                {'role': 'user', 'content': f'Please generate {number_of_mcqs} multiple choice question(s) with answer explanations at a board exam level for {specialty} using the above template modified to textwrap at 100 characters. Also, use bullets, bolding, and italics where appropriate. You do not repeat questions and you pick topics at random from the full breadth of the given specialty. Perform a final step by step review of your preliminary response to ensure it is uses current terminology and is accurate and evidence based when finalizing your response.'}
             ],
             temperature = 0.0
             )
@@ -330,15 +330,18 @@ with tab2:
     num_mcq=st.number_input("Number of MCQs to generate", min_value=1, max_value=10, value=2, step=1, key="num_mcqs")
     def set_specialty(specialty):   
         if specialty == "Allergy":
-            sample_board_mcq = """**Multiple Choice Question:**
-
-A 6-year-old boy with a history of eczema presents with his mother who reports that he recently had an episode of vomiting and hives after eating peanuts. The boy has never had a reaction to peanuts before. The mother asks what should be the next step in management. According to the latest guidelines, what is the most appropriate action?
+            sample_board_mcq = """A 6-year-old boy with a history of eczema presents with his mother who reports that he recently had an episode of vomiting and hives after eating peanuts. The boy has never had a reaction to peanuts before. The mother asks what should be the next step in management. According to the latest guidelines, what is the most appropriate action?
 
 A. Advise strict peanut avoidance
+
 B. Prescribe an epinephrine autoinjector and advise to use it if symptoms recur after eating peanuts
+
 C. Perform a skin prick test or measure peanut-specific IgE
+
 D. Recommend a peanut oral immunotherapy (OIT)
+
 E. Refer to an allergist for a supervised oral food challenge
+
 
 **Answer:**
 
@@ -360,15 +363,18 @@ E. Referral to an allergist for a supervised oral food challenge is typically do
 
 The question accurately presents a common clinical scenario in the practice of allergy, namely a suspected food allergy in a child, a topic that allergists should be familiar with. The correct answer and the explanations for the incorrect options are consistent with the latest AAAAI and ACAAI guidelines. This question tests the candidate's knowledge about the appropriate diagnostic steps in the evaluation of a suspected food allergy, making it a suitable question for an allergy board exam."""
         if specialty == "Critical Care":
-            sample_board_mcq = """**Multiple Choice Question:**
-
-A 55-year-old male patient with severe ARDS secondary to influenza pneumonia is on mechanical ventilation. Despite optimization of ventilator settings, including a low tidal volume strategy, the patient's oxygenation remains inadequate with a PaO2/FiO2 ratio of 75. What is the most appropriate next step according to the latest guidelines?
+            sample_board_mcq = """A 55-year-old male patient with severe ARDS secondary to influenza pneumonia is on mechanical ventilation. Despite optimization of ventilator settings, including a low tidal volume strategy, the patient's oxygenation remains inadequate with a PaO2/FiO2 ratio of 75. What is the most appropriate next step according to the latest guidelines?
 
 A. Increase tidal volume to improve oxygenation
+
 B. Initiate inhaled nitric oxide therapy
+
 C. Start systemic corticosteroid therapy
+
 D. Position the patient in prone
+
 E. Increase positive end-expiratory pressure (PEEP)
+
 
 **Answer:**
 
@@ -390,15 +396,18 @@ E. Increasing PEEP can improve oxygenation in ARDS, but it can also increase the
 
 The question accurately presents a typical scenario in critical care, specifically the management of a patient with severe ARDS, a topic that critical care physicians should be familiar with. The correct answer and the explanations for the incorrect options are consistent with the latest Surviving Sepsis Campaign guidelines. This question tests the candidate's knowledge about the management of severe ARDS, making it a suitable question for a critical care board exam."""
         if specialty == "Endocrinology":
-            sample_board_mcq = """**Multiple Choice Question:**
-
-A 35-year-old female presents with unexplained weight gain, fatigue, and intolerance to cold. Laboratory results reveal a TSH level of 12 mIU/L (normal: 0.5-4.5 mIU/L) and a free T4 level of 0.7 ng/dL (normal: 0.9-1.7 ng/dL). These findings are consistent with primary hypothyroidism. According to the latest guidelines, what is the most appropriate next step in management?
+            sample_board_mcq = """A 35-year-old female presents with unexplained weight gain, fatigue, and intolerance to cold. Laboratory results reveal a TSH level of 12 mIU/L (normal: 0.5-4.5 mIU/L) and a free T4 level of 0.7 ng/dL (normal: 0.9-1.7 ng/dL). These findings are consistent with primary hypothyroidism. According to the latest guidelines, what is the most appropriate next step in management?
 
 A. Start the patient on a full replacement dose of levothyroxine
+
 B. Repeat the thyroid function tests in 3 months
+
 C. Start the patient on a low dose of levothyroxine and titrate up based on response
+
 D. Refer the patient for thyroidectomy
+
 E. Start the patient on triiodothyronine (T3) supplementation
+
 
 **Answer:**
 
@@ -420,15 +429,18 @@ E. Routine use of T3 is not recommended by the ATA for the treatment of hypothyr
 
 The question accurately represents a common clinical scenario in endocrinology, specifically the management of primary hypothyroidism, a topic that endocrinologists should be familiar with. The correct answer and the explanations for the incorrect options are consistent with the latest ATA guidelines. This question tests the candidate's knowledge about the appropriate treatment for primary hypothyroidism, making it a suitable question for an endocrinology board exam."""
         if specialty == "Gastroenterology":
-            sample_board_mcq = """**Multiple Choice Question:**
-
-A 60-year-old male patient with a history of alcohol use disorder presents with sudden onset of severe abdominal pain and vomiting. On examination, his abdomen is distended and tender. Serum amylase and lipase levels are elevated. An abdominal CT scan reveals diffuse enlargement of the pancreas and peripancreatic fluid collections. The patient is diagnosed with acute pancreatitis. According to the latest guidelines, what is the most appropriate initial management strategy?
+            sample_board_mcq = """A 60-year-old male patient with a history of alcohol use disorder presents with sudden onset of severe abdominal pain and vomiting. On examination, his abdomen is distended and tender. Serum amylase and lipase levels are elevated. An abdominal CT scan reveals diffuse enlargement of the pancreas and peripancreatic fluid collections. The patient is diagnosed with acute pancreatitis. According to the latest guidelines, what is the most appropriate initial management strategy?
 
 A. Start the patient on prophylactic antibiotics
+
 B. Order an endoscopic retrograde cholangiopancreatography (ERCP) immediately
+
 C. Initiate aggressive intravenous hydration
+
 D. Administer intravenous opioids for pain control
+
 E. Start the patient on a high-fat diet
+
 
 **Answer:**
 
@@ -450,15 +462,18 @@ E. Dietary restrictions were previously recommended in acute pancreatitis, but m
 
 The question accurately presents a typical scenario in gastroenterology, specifically the management of a patient with acute pancreatitis, a topic that gastroenterologists should be familiar with. The correct answer and the explanations for the incorrect options are consistent with the latest ACG guidelines. This question tests the candidate's knowledge about the initial management of acute pancreatitis, making it a suitable question for a gastroenterology board exam."""
         if specialty == "Hospital Medicine":
-            sample_board_mcq = """**Multiple Choice Question:**
-
-A 68-year-old male patient with a history of hypertension and diabetes presents to the hospital with chest pain. An EKG shows ST-segment elevation in leads II, III, and aVF. The patient is diagnosed with an ST-elevation myocardial infarction (STEMI). He is allergic to aspirin, which causes him to develop angioedema. According to the latest guidelines, what is the most appropriate initial antiplatelet therapy?
+            sample_board_mcq = """A 68-year-old male patient with a history of hypertension and diabetes presents to the hospital with chest pain. An EKG shows ST-segment elevation in leads II, III, and aVF. The patient is diagnosed with an ST-elevation myocardial infarction (STEMI). He is allergic to aspirin, which causes him to develop angioedema. According to the latest guidelines, what is the most appropriate initial antiplatelet therapy?
 
 A. Clopidogrel
+
 B. Ticagrelor
+
 C. Prasugrel
+
 D. Eptifibatide
+
 E. Aspirin desensitization
+
 
 **Answer:**
 
@@ -480,15 +495,18 @@ E. Aspirin desensitization could be considered in some patients with coronary ar
 
 The question accurately represents a common clinical scenario in hospital medicine, specifically the management of a patient with STEMI who is allergic to aspirin, a topic that hospitalists should be familiar with. The correct answer and the explanations for the incorrect options are consistent with the latest ACC/AHA guidelines. This question tests the candidate's knowledge about the appropriate antiplatelet therapy for a patient with STEMI and aspirin allergy, making it a suitable question for a hospital medicine board exam."""
         if specialty == "Nephrology":
-            sample_board_mcq = """**Multiple Choice Question:**
-
-A 45-year-old female with type 2 diabetes mellitus and hypertension presents with proteinuria of 3.5g/day. Her serum creatinine is 1.2 mg/dL and estimated glomerular filtration rate (eGFR) is 60 mL/min/1.73m^2. Her blood pressure is 140/90 mmHg. According to the latest guidelines, what is the most appropriate initial management for this patient?
+            sample_board_mcq = """A 45-year-old female with type 2 diabetes mellitus and hypertension presents with proteinuria of 3.5g/day. Her serum creatinine is 1.2 mg/dL and estimated glomerular filtration rate (eGFR) is 60 mL/min/1.73m^2. Her blood pressure is 140/90 mmHg. According to the latest guidelines, what is the most appropriate initial management for this patient?
 
 A. Start losartan
+
 B. Start amlodipine
+
 C. Start furosemide
+
 D. Perform a renal biopsy
+
 E. Start metformin
+
 
 **Answer:**
 
@@ -510,15 +528,18 @@ E. Metformin is a first-line treatment for type 2 diabetes mellitus, but it does
 
 The question accurately presents a typical scenario in nephrology: the management of a patient with diabetic kidney disease. The correct answer and explanations for the incorrect options align with the latest KDIGO guidelines. This question tests the candidate's knowledge about the initial management of proteinuria in a patient with diabetic kidney disease, making it a suitable question for a nephrology board exam."""
         if specialty == "Neurology":
-            sample_board_mcq = """**Multiple Choice Question:**
-
-A 58-year-old male with a history of hypertension presents with a sudden onset of right-sided weakness and slurred speech. His symptoms started 90 minutes ago. A CT scan of the head shows no hemorrhage. His blood pressure is 185/95 mmHg. According to the latest guidelines, what is the most appropriate initial management for this patient?
+            sample_board_mcq = """A 58-year-old male with a history of hypertension presents with a sudden onset of right-sided weakness and slurred speech. His symptoms started 90 minutes ago. A CT scan of the head shows no hemorrhage. His blood pressure is 185/95 mmHg. According to the latest guidelines, what is the most appropriate initial management for this patient?
 
 A. Intravenous tissue plasminogen activator (tPA)
+
 B. Antihypertensive therapy to lower blood pressure below 140/90 mmHg
+
 C. Immediate mechanical thrombectomy
+
 D. Aspirin and clopidogrel
+
 E. Wait for MRI before initiating any treatment
+
 
 **Answer:**
 
@@ -540,15 +561,18 @@ E. Waiting for an MRI may delay treatment unnecessarily. A non-contrast CT scan 
 
 The question presents a typical scenario in neurology, specifically the management of acute ischemic stroke. The correct answer and the explanations for the incorrect options are consistent with the latest guidelines from the American Heart Association/American Stroke Association. This question tests the candidate's knowledge about the initial management of acute ischemic stroke, making it a suitable question for a neurology board exam."""
         if specialty == "Pulmonary":
-            sample_board_mcq = """**Multiple Choice Question:**
-
-A 68-year-old male with a 40-pack-year smoking history presents with a persistent cough and shortness of breath. His chest CT shows an upper lobe cavitary lesion with a spiculated margin. Sputum cytology reveals atypical cells. According to the latest guidelines, what is the most appropriate next step in management for this patient?
+            sample_board_mcq = """A 68-year-old male with a 40-pack-year smoking history presents with a persistent cough and shortness of breath. His chest CT shows an upper lobe cavitary lesion with a spiculated margin. Sputum cytology reveals atypical cells. According to the latest guidelines, what is the most appropriate next step in management for this patient?
 
 A. Sputum culture
+
 B. Bronchoscopy with biopsy
+
 C. PET scan
+
 D. Start empiric antibiotics
+
 E. Repeat CT scan in 3 months
+
 
 **Answer:**
 
@@ -571,15 +595,18 @@ E. Given the high suspicion for malignancy, a wait-and-see approach with a repea
 The question presents a typical scenario in pulmonary medicine, specifically the approach to a suspicious lung lesion. The correct answer and the explanations for the incorrect options are consistent with the latest guidelines for lung cancer diagnosis and management. This question tests the candidate's knowledge about the initial management of a suspicious lung lesion in a high-risk patient, making it a suitable question for a pulmonary board exam.
 """
         if specialty == "Clinical Informatics":
-            sample_board_mcq = """**Multiple Choice Question:**
-
-    A 300-bed community hospital is implementing a new electronic health record (EHR) system. The chief medical information officer (CMIO) is concerned about potential medication errors during the transition. Which of the following strategies would be most effective in minimizing this risk according to the latest recommendations?
+            sample_board_mcq = """A 300-bed community hospital is implementing a new electronic health record (EHR) system. The chief medical information officer (CMIO) is concerned about potential medication errors during the transition. Which of the following strategies would be most effective in minimizing this risk according to the latest recommendations?
 
     A. Conduct extensive user training prior to the system go-live
+    
     B. Run the old and new EHR systems in parallel for the first 3 months
+    
     C. Implement a system of double checks for all medication orders for the first month
+    
     D. Perform a Failure Modes and Effects Analysis (FMEA) prior to system go-live
+    
     E. Increase staffing levels for the first two weeks following go-live
+    
 
     **Answer:**
 
@@ -601,15 +628,18 @@ The question presents a typical scenario in pulmonary medicine, specifically the
 
     The question accurately presents a scenario relevant to clinical informatics, specifically the transition to a new EHR system, a topic that clinical informatics professionals should be familiar with. The correct answer and the explanations for the incorrect options are consistent with the latest recommendations from the AHRQ and the Joint Commission. This question tests the candidate's knowledge about risk management strategies in health IT projects, making it a suitable question for a clinical informatics board exam."""
         if specialty == 'Hematology Oncology':
-            sample_board_mcq = """**Multiple Choice Question:**
-
-    A 65-year-old woman with a history of breast cancer treated with lumpectomy and radiation therapy 5 years ago presents with a new onset of back pain. Imaging studies reveal multiple osteolytic lesions in the vertebrae. A bone marrow biopsy confirms the presence of plasma cells. Lab tests show a serum calcium level of 11.5 mg/dL (normal range: 8.5-10.2 mg/dL) and a creatinine level of 1.2 mg/dL (normal range: 0.6-1.1 mg/dL). The patient is diagnosed with multiple myeloma. According to the latest guidelines, what would be the most appropriate initial treatment for this patient?
+            sample_board_mcq = """A 65-year-old woman with a history of breast cancer treated with lumpectomy and radiation therapy 5 years ago presents with a new onset of back pain. Imaging studies reveal multiple osteolytic lesions in the vertebrae. A bone marrow biopsy confirms the presence of plasma cells. Lab tests show a serum calcium level of 11.5 mg/dL (normal range: 8.5-10.2 mg/dL) and a creatinine level of 1.2 mg/dL (normal range: 0.6-1.1 mg/dL). The patient is diagnosed with multiple myeloma. According to the latest guidelines, what would be the most appropriate initial treatment for this patient?
 
     A. High-dose chemotherapy with autologous stem cell transplantation
+    
     B. Combination of bortezomib, lenalidomide, and dexamethasone (VRd)
+    
     C. Combination of cyclophosphamide, bortezomib, and dexamethasone (CyBorD)
+    
     D. Palliative radiation therapy for spinal lesions
+    
     E. Bisphosphonate therapy alone
+    
 
     **Answer:**
 
@@ -632,15 +662,18 @@ The question presents a typical scenario in pulmonary medicine, specifically the
     The question accurately presents a clinical scenario suggestive of a patient with multiple myeloma, a topic that hematology and oncology physicians should be familiar with. The correct answer and the explanations for the incorrect options are consistent with the latest NCCN guidelines and standard textbooks. This question tests the candidate's knowledge about the management of multiple myeloma, making it a suitable question for a hematology and oncology board exam.
     """
         if specialty == 'Rheumatology':
-            sample_board_mcq = """**Multiple Choice Question:**
-
-    A 50-year-old woman presents with a 6-month history of morning stiffness, metacarpophalangeal joint swelling, and fatigue. Lab testing is positive for anti-cyclic citrullinated peptide (anti-CCP) antibodies and rheumatoid factor. Her C-reactive protein (CRP) is also elevated. She has been treated with methotrexate for the past 3 months, but her symptoms have not improved significantly. What is the most appropriate next step in management according to the latest guidelines?
+            sample_board_mcq = """A 50-year-old woman presents with a 6-month history of morning stiffness, metacarpophalangeal joint swelling, and fatigue. Lab testing is positive for anti-cyclic citrullinated peptide (anti-CCP) antibodies and rheumatoid factor. Her C-reactive protein (CRP) is also elevated. She has been treated with methotrexate for the past 3 months, but her symptoms have not improved significantly. What is the most appropriate next step in management according to the latest guidelines?
 
     A. Increase the dose of methotrexate
+    
     B. Add hydroxychloroquine
+    
     C. Add a tumor necrosis factor (TNF) inhibitor
+    
     D. Switch to leflunomide
+    
     E. Add low-dose prednisone
+    
 
     **Answer:**
 
@@ -662,15 +695,18 @@ The question presents a typical scenario in pulmonary medicine, specifically the
 
     The question accurately presents a clinical scenario suggestive of a patient with rheumatoid arthritis who is not responding to initial methotrexate therapy, a topic that rheumatology physicians should be familiar with. The correct answer and the explanations for the incorrect options are consistent with the latest guidelines and standard textbooks. This question tests the candidate's knowledge about the management of rheumatoid arthritis, making it a suitable question for a rheumatology board exam."""
         if specialty == "Cardiology":
-            sample_board_mcq = """**Multiple Choice Question:**
-
-    A 59-year-old man with a known history of systolic heart failure presents with increasing dyspnea, orthopnea, and lower extremity edema. His blood pressure is 110/70 mmHg, heart rate is 90 beats per minute, and his EKG shows a left bundle branch block with a QRS duration of 150 milliseconds. His current medication regimen includes a beta blocker, an ACE inhibitor, and a diuretic. Which of the following is the most appropriate next step in management?
+            sample_board_mcq = """A 59-year-old man with a known history of systolic heart failure presents with increasing dyspnea, orthopnea, and lower extremity edema. His blood pressure is 110/70 mmHg, heart rate is 90 beats per minute, and his EKG shows a left bundle branch block with a QRS duration of 150 milliseconds. His current medication regimen includes a beta blocker, an ACE inhibitor, and a diuretic. Which of the following is the most appropriate next step in management?
 
     A. Add a calcium channel blocker
+    
     B. Add a second diuretic
+    
     C. Add digoxin
+    
     D. Refer for cardiac resynchronization therapy (CRT)
+    
     E. Refer for heart transplant evaluation
+    
 
     **Answer:**
 
@@ -692,15 +728,18 @@ The question presents a typical scenario in pulmonary medicine, specifically the
 
     The question accurately presents a clinical scenario suggestive of a patient with heart failure who would benefit from cardiac resynchronization therapy, a topic that cardiology physicians should be familiar with. The correct answer and the explanations for the incorrect options are consistent with the clinical guidelines and standard textbooks. This question tests the candidate's knowledge about the management of heart failure, making it a suitable question for a cardiology board exam."""     
         if specialty == "Internal Medicine":
-            sample_board_mcq = """**Multiple Choice Question:**
-
-    A 65-year-old man presents to the clinic with a three-month history of progressive exertional dyspnea. He is a former smoker with a 30 pack-year history and quit 5 years ago. His physical examination is significant for distant heart sounds and decreased breath sounds bilaterally with dullness to percussion. His chest X-ray shows bilateral pleural effusions. Thoracentesis reveals a cholesterol level of 70 mg/dL and a protein level of 4.8 g/dL in the pleural fluid. Which of the following is the most likely diagnosis?
+            sample_board_mcq = """A 65-year-old man presents to the clinic with a three-month history of progressive exertional dyspnea. He is a former smoker with a 30 pack-year history and quit 5 years ago. His physical examination is significant for distant heart sounds and decreased breath sounds bilaterally with dullness to percussion. His chest X-ray shows bilateral pleural effusions. Thoracentesis reveals a cholesterol level of 70 mg/dL and a protein level of 4.8 g/dL in the pleural fluid. Which of the following is the most likely diagnosis?
 
     A. Congestive heart failure
+    
     B. Pneumonia
+    
     C. Pulmonary embolism
+    
     D. Chylothorax
+    
     E. Chronic tuberculous pleuritis
+    
 
     **Answer:**
 
@@ -722,15 +761,18 @@ The question presents a typical scenario in pulmonary medicine, specifically the
 
     The question accurately presents a clinical scenario suggestive of chronic tuberculous pleuritis, a condition that internal medicine physicians should be familiar with. The correct answer and the explanations for the incorrect options are consistent with the clinical guidelines and standard textbooks. This question tests the candidate's knowledge about the clinical presentation and differential diagnosis of pleural effusions, making it a suitable question for an internal medicine board exam."""
         if specialty == 'Infectious Diseases':
-            sample_board_mcq = """**Multiple Choice Question:**
-
-    A 32-year-old woman presents with a painful, swollen right knee after returning from a hiking trip in the Northeast United States. She also reports fever, chills, and fatigue for the past week. On examination, she has a large erythematous rash on her right thigh with a clear area in the center. Synovial fluid analysis of the knee joint reveals inflammatory findings. Which of the following is the most appropriate treatment?
+            sample_board_mcq = """A 32-year-old woman presents with a painful, swollen right knee after returning from a hiking trip in the Northeast United States. She also reports fever, chills, and fatigue for the past week. On examination, she has a large erythematous rash on her right thigh with a clear area in the center. Synovial fluid analysis of the knee joint reveals inflammatory findings. Which of the following is the most appropriate treatment?
 
     A. Doxycycline
+    
     B. Ceftriaxone
+    
     C. Amoxicillin-clavulanate
+    
     D. Trimethoprim-sulfamethoxazole
+    
     E. Azithromycin
+    
 
     **Answer:**
 
