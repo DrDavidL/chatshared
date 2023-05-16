@@ -2,6 +2,27 @@
 import streamlit as st
 import openai
 import os  
+from langchain.chains import ConversationChain
+from langchain.chains.conversation.memory import ConversationEntityMemory
+from langchain.chains.conversation.prompt import ENTITY_MEMORY_CONVERSATION_TEMPLATE
+from langchain.llms import OpenAI
+from langchain.prompts import PromptTemplate
+import os
+import PyPDF2
+import random
+import itertools
+import streamlit as st
+from io import StringIO
+import time
+from langchain.vectorstores import FAISS
+from langchain.chains import RetrievalQA
+from langchain.chat_models import ChatOpenAI
+from langchain.retrievers import SVMRetriever
+from langchain.chains import QAGenerationChain
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain.callbacks.manager import CallbackManager
 
 if 'history' not in st.session_state:
             st.session_state.history = []
@@ -12,9 +33,9 @@ if 'output_history' not in st.session_state:
 if 'mcq_history' not in st.session_state:
             st.session_state.mcq_history = []
 
+API_O = st.secrets["OPENAI_API_KEY"]
 # Define Streamlit app layout
-st.title("Prompted Chat")
-st.sidebar.write("Updated 5/13/2023")
+st.title("Medimate Assistant2")
 st.sidebar.write("David Liebovitz, MD Northwestern University")
 
 def set_prefix():
@@ -213,7 +234,7 @@ def set_prefix():
         temperature = 0.3     
     return prefix, sample_question, sample_answer, temperature 
 
-tab1, tab2 = st.tabs(["Chat", "Study"])
+tab1, tab2, tab3, tab4 = st.tabs(["Long Answer", "Board Questions", "Quick Response", "PDF Analysis"])
 
 with tab1:
 
@@ -253,14 +274,14 @@ with tab1:
         mcq_completion = openai.ChatCompletion.create(
             model ='gpt-3.5-turbo',
             messages = [
-                {'role': 'system', 'content': "You are a board certified expert physician in " + specialty + """ and you are asked to generate a board exam level multiple choice question.
+                {'role': 'system', 'content': "You are a board certified expert physician in " + specialty + """ and you are asked to generate unique, never before seen, board exam level multiple choice questions. All outputs should be modified for markdown formatting with bullets, bolding, and italics where appropriate
                  You rely fully on the latest evidence based findings and terminology from the most recent clinical guidelines and consensus statements. Then, you follow best practices in question design avoiding clues in the stem wording, avoiding negative wording, and avoiding absolute terms like always or never, avoiding 
                  tricky wording, and avoiding all of the above or none of the above as answer choices. You also follow best practices in answer choice design by making sure the correct answer is
                     the same length as the distractors, and that the distractors are plausible. You also make sure that the correct answer is not the longest or shortest answer. You also make sure that the correct answer is not the most or least specific answer.
                     You also make sure that the correct answer is not the most or least inclusive answer. Perform a final step by step review of your response to ensure it is factual and based on evidence based consensus guidelines and is accurate and complete when finalizing your response.
                  """},
                 {'role': 'assistant', 'content': sample_board_mcq},
-                {'role': 'user', 'content': f'Please generate {number_of_mcqs} multiple choice question(s) with answer explanations at a board exam level for {specialty} using the above template modified to display nicely on a webpage. Perform a final step by step review of your preliminary response to ensure it is uses current terminology and is accurate and evidence based when finalizing your response.'}
+                {'role': 'user', 'content': f'Please generate {number_of_mcqs} multiple choice question(s) with answer explanations at a board exam level for {specialty} using the above template modified to textwrap at 100 characters. Also, use bullets, bolding, and italics where appropriate. Perform a final step by step review of your preliminary response to ensure it is uses current terminology and is accurate and evidence based when finalizing your response.'}
             ],
             temperature = 0.0
             )
@@ -742,3 +763,450 @@ The question presents a typical scenario in pulmonary medicine, specifically the
         st.markdown(f" {generated_mcq['choices'][0]['message']['content']}") # Change how you access the message content
         st.session_state.mcq_history.append((generated_mcq['choices'][0]['message']['content']))
     
+with tab3:
+    #     """
+    # This is a Python script that serves as a frontend for a conversational AI model built with the `langchain` and `llms` libraries.
+    # The code creates a web application using Streamlit, a Python library for building interactive web apps.
+    # # Author: Avratanu Biswas
+    # # Date: March 11, 2023
+    # """
+
+    # # Import necessary libraries
+    prompt2=PromptTemplate(
+        template="""You are an advanced AI which has assimilated skills of hundreds of master physicians with decades of current clinical experience. You know the latest medical literature and the art of 
+                diagnosis and clinical management pearls. Your words are always based on the bulk of the scientific evidence while being in tune for new practice changing high quality research. 
+                You don't suffer from outdated perspectives and fully assimilate these practice changing methods. You convey much knowledge in few words. You wish to help learners. The learners who engage
+                with you are clinically trained physicians. You do not need to worry that they won't apply professional judgment to your advice.
+                Context:\n{entities}\n\nCurrent conversation:\n{history}\nLast line:\nHuman: {input}\nYou:' template_format='f-string' validate_template=True
+                """,
+        input_variables=['entities', 'history', 'input'],
+        output_parser=None,
+        partial_variables={}
+    )
+    
+    # Set Streamlit page configuration
+    # st.write('🧠MemoryBot🤖')
+    # Initialize session states
+    if "generated" not in st.session_state:
+        st.session_state["generated"] = []
+    if "past" not in st.session_state:
+        st.session_state["past"] = []
+    if "input" not in st.session_state:
+        st.session_state["input"] = ""
+    if "stored_session" not in st.session_state:
+        st.session_state["stored_session"] = []
+
+    # Define function to get user input
+    def get_text():
+        """
+        Get the user input text.
+
+        Returns:
+            (str): The text entered by the user
+        """
+        # if st.session_state.past == []:
+        #     new_chat()
+        input_text = st.text_input("You: ", st.session_state["input"], key="input",
+                                # placeholder="Your AI assistant here! Ask me anything ...", 
+                                label_visibility='hidden')
+        return input_text
+
+    # Define function to start a new chat
+    def new_chat():
+        """
+        Clears session state and starts a new chat.
+        """
+        save = []
+        for i in range(len(st.session_state['generated'])-1, -1, -1):
+            save.append("User:" + st.session_state["past"][i])
+            save.append("Bot:" + st.session_state["generated"][i])        
+        st.session_state["stored_session"].append(save)
+        st.session_state["generated"] = []
+        st.session_state["past"] = []
+        st.session_state["input"] = ""
+        st.session_state.entity_memory.entity_store = {}
+        st.session_state.entity_memory.buffer.clear()
+
+    # Set up sidebar with various options
+        # Option to preview memory store
+    with st.sidebar:
+        # if st.checkbox("Preview memory store"):
+        #     with st.expander("Memory-Store", expanded=False):
+        #         st.session_state.entity_memory.store
+        # # Option to preview memory buffer
+        # if st.checkbox("Preview memory buffer"):
+        if st.session_state.past != []:
+            with st.expander("Short Q/A History", expanded=False):
+                st.session_state.entity_memory.buffer
+    with st.sidebar.expander("🛠️ ", expanded=True):
+        MODEL = st.selectbox(label='Model', options=['gpt-3.5-turbo','text-davinci-003','text-davinci-002','code-davinci-002'])
+        K = st.number_input(' (#)Summary of prompts to consider',min_value=3,max_value=1000)
+
+    # Set up the Streamlit app layout
+    st.title("🤖 Quick Chats 🧠")
+    st.subheader(" Powered by 🦜 LangChain + OpenAI + Streamlit")
+
+    # Ask the user to enter their OpenAI API key
+    # API_O = st.sidebar.text_input("API-KEY", type="password")
+
+    # Session state storage would be ideal
+
+    # Create an OpenAI instance
+    llm = OpenAI(temperature=0,
+                openai_api_key=API_O, 
+                model_name=MODEL, 
+                verbose=False) 
+
+
+    # Create a ConversationEntityMemory object if not already created
+    if 'entity_memory' not in st.session_state:
+            st.session_state.entity_memory = ConversationEntityMemory(llm=llm, k=K )
+        
+        # Create the ConversationChain object with the specified configuration
+    Conversation = ConversationChain(
+            llm=llm, 
+            # prompt= ENTITY_MEMORY_CONVERSATION_TEMPLATE,
+            prompt=prompt2,
+            memory=st.session_state.entity_memory
+        )  
+
+
+
+    # Add a button to start a new chat
+    st.sidebar.button("New Chat", on_click = new_chat, type='primary')
+
+    # Get the user input
+    user_input = get_text()
+
+    # Generate the output using the ConversationChain object and the user input, and add the input/output to the session
+    if user_input:
+        output = Conversation.run(input=user_input)  
+        st.session_state.past.append(user_input)  
+        st.session_state.generated.append(output)  
+
+    # Allow to download as well
+    download_str = []
+    
+    # ENTITY_MEMORY_CONVERSATION_TEMPLATE
+    # Display the conversation history using an expander, and allow the user to download it
+    with st.expander("Conversation", expanded=True):
+        for i in range(len(st.session_state['generated'])-1, -1, -1):
+            st.info(st.session_state["past"][i],icon="🧐")
+            st.success(st.session_state["generated"][i], icon="🤖")
+            download_str.append(st.session_state["past"][i])
+            download_str.append(st.session_state["generated"][i])
+        
+        # Can throw error - requires fix
+        download_str = '\n'.join(download_str)
+        if download_str:
+            st.download_button('Download',download_str)
+
+    # Display stored conversation sessions in the sidebar
+    for i, sublist in enumerate(st.session_state.stored_session):
+            with st.sidebar.expander(label= f"Conversation-Session:{i}"):
+                st.write(sublist)
+
+    # Allow the user to clear all stored conversation sessions
+    # if st.session_state.stored_session:   
+    #     if st.sidebar.checkbox("Clear-all"):
+    #         del st.session_state.stored_session
+
+with tab4:
+    st.session_state.openai_api_key = st.secrets["OPENAI_API_KEY"]
+    if "pdf_user_question" not in st.session_state:
+            st.session_state["pdf_user_question"] = []
+    if "pdf_user_answer" not in st.session_state:
+            st.session_state["pdf_user_answer"] = []
+
+    # st.set_page_config(page_title="Article Analyzer",page_icon=':stethoscope:')
+
+    @st.cache_data
+    def load_docs(files):
+        st.info("`Reading doc ...`")
+        all_text = ""
+        for file_path in files:
+            file_extension = os.path.splitext(file_path.name)[1]
+            if file_extension == ".pdf":
+                pdf_reader = PyPDF2.PdfReader(file_path)
+                text = ""
+                for page in pdf_reader.pages:
+                    text += page.extract_text()
+                all_text += text
+            elif file_extension == ".txt":
+                stringio = StringIO(file_path.getvalue().decode("utf-8"))
+                text = stringio.read()
+                all_text += text
+            else:
+                st.warning('Please provide txt or pdf.', icon="⚠️")
+        return all_text
+
+
+
+
+    @st.cache_resource
+    def create_retriever(_embeddings, splits, retriever_type):
+        # openai_api_key = st.secrets.OPENAI_API_KEY
+        # if retriever_type == "SIMILARITY SEARCH":
+        #     try:
+        #         vectorstore = FAISS.from_texts(splits, _embeddings)
+        #     except (IndexError, ValueError) as e:
+        #         st.error(f"Error creating vectorstore: {e}")
+        #         return
+        #     retriever = vectorstore.as_retriever(k=5)
+        # elif retriever_type == "SUPPORT VECTOR MACHINES":
+        retriever = SVMRetriever.from_texts(splits, _embeddings)
+
+        return retriever
+
+    @st.cache_resource
+    def split_texts(text, chunk_size, overlap, split_method):
+
+        # Split texts
+        # IN: text, chunk size, overlap, split_method
+        # OUT: list of str splits
+
+        st.info("`Breaking into bitesize chunks...`")
+
+        split_method = "RecursiveTextSplitter"
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size, chunk_overlap=overlap)
+
+        splits = text_splitter.split_text(text)
+        if not splits:
+            st.error("Failed to split document")
+            st.stop()
+
+        return splits
+
+    @st.cache_data
+    def generate_eval(text, N, chunk):
+
+        # Generate N questions from context of chunk chars
+        # IN: text, N questions, chunk size to draw question from in the doc
+        # OUT: eval set as JSON list
+
+        st.info("`Generating sample questions and answers...`")
+        n = len(text)
+        starting_indices = [random.randint(0, n-chunk) for _ in range(N)]
+        sub_sequences = [text[i:i+chunk] for i in starting_indices]
+        chain = QAGenerationChain.from_llm(ChatOpenAI(temperature=0))
+        eval_set = []
+        for i, b in enumerate(sub_sequences):
+            try:
+                qa = chain.run(b)
+                eval_set.append(qa)
+                st.write("Creating Question:",i+1)
+            except:
+                st.warning('Error generating question %s.' % str(i+1), icon="⚠️")
+        eval_set_full = list(itertools.chain.from_iterable(eval_set))
+        return eval_set_full
+
+
+    # ...
+
+    def main():
+        
+        foot = f"""
+        <div style="
+            position: fixed;
+            bottom: 0;
+            left: 30%;
+            right: 0;
+            width: 50%;
+            padding: 0px 0px;
+            text-align: center;
+        ">
+            <p>Updated 5/15/23</p>
+        </div>
+        """
+
+        st.markdown(foot, unsafe_allow_html=True)
+        
+        # Add custom CSS
+        st.markdown(
+            """
+            <style>
+            
+            #MainMenu {visibility: hidden;
+            # }
+                footer {visibility: hidden;
+                }
+                .css-card {
+                    border-radius: 0px;
+                    padding: 30px 10px 10px 10px;
+                    background-color: #f8f9fa;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    margin-bottom: 10px;
+                    font-family: "IBM Plex Sans", sans-serif;
+                    color: black;
+                }
+                
+                .card-tag {
+                    border-radius: 0px;
+                    padding: 1px 5px 1px 5px;
+                    margin-bottom: 10px;
+                    position: absolute;
+                    left: 0px;
+                    top: 0px;
+                    font-size: 0.6rem;
+                    font-family: "IBM Plex Sans", sans-serif;
+                    color: white;
+                    background-color: purple;
+                    }
+                    
+                .css-zt5igj {left:0;
+                }
+                
+                span.css-10trblm {margin-left:0;
+                }
+                
+                div.css-1kyxreq {margin-top: -40px;
+                }
+                
+            
+        
+                
+            
+
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+        # st.sidebar.image("img/logo1.png")
+
+
+    
+
+        st.write(
+        f"""
+        <div style="display: flex; align-items: center; margin-left: 0;">
+            <h1 style="display: inline-block;"> PDF Parser</h1>
+            <sup style="margin-left:5px;font-size:small; color: green;"></sup>
+        </div>
+        """,
+        unsafe_allow_html=True,
+            )
+        
+        
+
+
+        
+        
+        # st.sidebar.title("Settings and Preliminary Outputs")
+        num_eval_questions =st.number_input("First set the number of questions to generate", min_value=1, max_value=50, value=10, step=1)
+        
+        embedding_option = "OpenAI Embeddings"
+
+        
+        retriever_type = "SUPPORT VECTOR MACHINES"
+
+        # Use RecursiveCharacterTextSplitter as the default and only text splitter
+        splitter_type = "RecursiveCharacterTextSplitter"
+
+        if 'openai_api_key' not in st.session_state:
+            openai_api_key = st.text_input(
+                'Please enter your OpenAI API key or [get one here](https://platform.openai.com/account/api-keys)', value="", placeholder="Enter the OpenAI API key which begins with sk-")
+            if openai_api_key:
+                st.session_state.openai_api_key = st.secrets["OPENAI_API_KEY"]
+                os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+            else:
+                #warning_text = 'Please enter your OpenAI API key. Get yours from here: [link](https://platform.openai.com/account/api-keys)'
+                #warning_html = f'<span>{warning_text}</span>'
+                #st.markdown(warning_html, unsafe_allow_html=True)
+                return
+        else:
+            os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+
+        uploaded_files = st.file_uploader("Upload a PDF or TXT Document", type=[
+                                        "pdf", "txt"], accept_multiple_files=True)
+
+        if uploaded_files:
+            # Check if last_uploaded_files is not in session_state or if uploaded_files are different from last_uploaded_files
+            if 'last_uploaded_files' not in st.session_state or st.session_state.last_uploaded_files != uploaded_files:
+                st.session_state.last_uploaded_files = uploaded_files
+                if 'eval_set' in st.session_state:
+                    del st.session_state['eval_set']
+
+            # Load and process the uploaded PDF or TXT files.
+            loaded_text = load_docs(uploaded_files)
+            st.write("Documents uploaded and 'read.'")
+
+            # Split the document into chunks
+            splits = split_texts(loaded_text, chunk_size=1000,
+                                overlap=100, split_method=splitter_type)
+
+            # Display the number of text chunks
+            num_chunks = len(splits)
+            st.write(f"Number of text chunks: {num_chunks}")
+
+            # Embed using OpenAI embeddings
+                # Embed using OpenAI embeddings or HuggingFace embeddings
+
+            embeddings = OpenAIEmbeddings()
+
+            retriever = create_retriever(embeddings, splits, retriever_type)
+
+
+            # Initialize the RetrievalQA chain with streaming output
+            callback_handler = StreamingStdOutCallbackHandler()
+            callback_manager = CallbackManager([callback_handler])
+
+            chat_openai = ChatOpenAI(
+                streaming=True, callback_manager=callback_manager, verbose=True, temperature=0)
+            
+            
+            _qa = RetrievalQA.from_chain_type(llm=chat_openai, retriever=retriever, chain_type="stuff", verbose=True)
+            @st.cache_data
+            def fn_qa_run(_qa, user_question):
+                return _qa.run(user_question)
+            
+        
+
+            # Check if there are no generated question-answer pairs in the session state
+            
+            if 'eval_set' not in st.session_state:
+                # Use the generate_eval function to generate question-answer pairs
+                # num_eval_questions = 10  # Number of question-answer pairs to generate
+                st.session_state.eval_set = generate_eval(
+                    loaded_text, num_eval_questions, 3000)
+
+        # Display the question-answer pairs in the sidebar with smaller text
+            for i, qa_pair in enumerate(st.session_state.eval_set):
+                st.sidebar.markdown(
+                    f"""
+                    <div class="css-card">
+                    <span class="card-tag">Question {i + 1}</span>
+                        <p style="font-size: 12px;">{qa_pair['question']}</p>
+                        <p style="font-size: 12px;">{qa_pair['answer']}</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+                # <h4 style="font-size: 14px;">Question {i + 1}:</h4>
+                # <h4 style="font-size: 14px;">Answer {i + 1}:</h4>
+            st.write("Ready to answer your questions!")
+
+            # Question and answering
+            user_question = st.text_input("Please enter your own question about the PDF(s):")
+            if user_question:
+                answer = fn_qa_run(_qa, user_question)
+                st.session_state.pdf_user_question.append(user_question)  
+                st.session_state.pdf_user_answer.append(answer)  
+                # st.write("Answer:", answer)
+            download_str = []
+            with st.expander("PDF Questions", expanded=True):
+                for i in range(len(st.session_state['pdf_user_answer'])-1, -1, -1):
+                    st.info(st.session_state["pdf_user_question"][i],icon="🧐")
+                    st.success(st.session_state["pdf_user_answer"][i], icon="🤖")
+                    download_str.append(st.session_state["pdf_user_question"][i])
+                    download_str.append(st.session_state["pdf_user_answer"][i])
+            
+                # Can throw error - requires fix
+                download_str = '\n'.join(download_str)
+                if download_str:
+                    st.download_button('Download',download_str)
+
+
+    if __name__ == "__main__":
+        main()
+

@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 openai = "*"
 streamlit = "*"
+langchain = "*"
+pypdf2 = "*"
 
 [dev-packages]
 
