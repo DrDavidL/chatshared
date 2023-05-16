@@ -8,6 +8,7 @@ openai = "*"
 streamlit = "*"
 langchain = "*"
 pypdf2 = "*"
+scikit-learn = "*"
 
 [dev-packages]
 
