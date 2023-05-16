@@ -23,6 +23,8 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.callbacks.manager import CallbackManager
+import sklearn
+from sklearn import svm
 
 if 'history' not in st.session_state:
             st.session_state.history = []
