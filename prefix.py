@@ -38,7 +38,8 @@ if 'mcq_history' not in st.session_state:
 API_O = st.secrets["OPENAI_API_KEY"]
 # Define Streamlit app layout
 st.title("Medimate Assistant2")
-st.sidebar.write("David Liebovitz, MD Northwestern University")
+st.write("David Liebovitz, MD Northwestern University")
+st.write("Last updated 5/16/23")
 
 def set_prefix():
     if prefix_context == "Master Clinician Explaining to Junior Clinician":
@@ -306,9 +307,9 @@ with tab1:
         st.session_state.output_history.append((output_text['choices'][0]['message']['content']))
 
 
-    if st.sidebar.button("Clear Memory of Current Conversation"):
-        st.session_state.history = []
-        st.sidebar.write("Working memory is cleared; long answer output still saved for you!")
+    # if st.sidebar.button("Clear Memory of Current Conversation"):
+    #     st.session_state.history = []
+    #     st.sidebar.write("Working memory is cleared; long answer output still saved for you!")
 
     # st.button("Clear Input Field", on_click=clear_text)
 
@@ -851,7 +852,7 @@ with tab3:
     Human: Is the curb65 or the pneumonia severity index the better triage tool?
     You: If simplicity and ease of use are most important, the CURB-65 may be preferable. If you desire a more comprehensive risk assessment, particularly for identifying low-risk patients, 
     the PSI might be the better choice. It is also important to consider that clinical judgment should always complement these scoring systems when making decisions about patient management.            
-    Context:\n{entities}\n\nCurrent conversation:\n{history}\nLast line:\nHuman: {input}\nYou:' template_format='f-string' validate_template=True
+    Context:\n{entities}\n\nCurrent conversation:\n{history}\nLast line:\nHuman: {input}\nAI:' template_format='f-string' validate_template=True
                 """,
         input_variables=['entities', 'history', 'input'],
         output_parser=None,
@@ -906,15 +907,15 @@ with tab3:
 
     # Set up sidebar with various options
         # Option to preview memory store
-    with st.sidebar:
-        # if st.checkbox("Preview memory store"):
-        #     with st.expander("Memory-Store", expanded=False):
-        #         st.session_state.entity_memory.store
-        # # Option to preview memory buffer
-        # if st.checkbox("Preview memory buffer"):
-        if st.session_state.past != []:
-            with st.expander("Short Q/A History", expanded=False):
-                st.session_state.entity_memory.buffer
+    # with st.sidebar:
+    #     # if st.checkbox("Preview memory store"):
+    #     #     with st.expander("Memory-Store", expanded=False):
+    #     #         st.session_state.entity_memory.store
+    #     # # Option to preview memory buffer
+    #     # if st.checkbox("Preview memory buffer"):
+    #     if st.session_state.past != []:
+    #         with st.expander("Short Q/A History", expanded=False):
+    #             st.session_state.entity_memory.buffer
     with st.expander("🛠️ ", expanded=True):
         MODEL = st.selectbox(label='Model', options=['gpt-3.5-turbo','text-davinci-003','text-davinci-002','code-davinci-002'])
         K = st.number_input(' (#)Summary of prompts to consider',min_value=3,max_value=1000)
