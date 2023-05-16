@@ -297,12 +297,12 @@ with tab1:
         st.session_state.history.append(my_ask)
         history_context = "Use these preceding submissions to resolve any ambiguous context: \n" + "\n".join(st.session_state.history) + "now, for the current question: \n"
         output_text = answer_using_prefix(prefix, sample_question, sample_answer, my_ask, temperature, history_context=history_context)
-
+        # st.session_state.my_ask = ''
         # st.write("Answer", output_text)
         
         # st.write(st.session_state.history)
-        st.write(f'Me: {my_ask}')
-        st.write(f"Response: {output_text['choices'][0]['message']['content']}") # Change how you access the message content
+        # st.write(f'Me: {my_ask}')
+        # st.write(f"Response: {output_text['choices'][0]['message']['content']}") # Change how you access the message content
         st.session_state.output_history.append((output_text['choices'][0]['message']['content']))
 
 
@@ -317,10 +317,32 @@ with tab1:
 
 
 
-    st.sidebar.write("Current Input History", st.session_state.history)
-    st.sidebar.write("Current Output History", st.session_state.output_history)
-    st.sidebar.write("Current MCQ History", st.session_state.mcq_history)
+    # st.sidebar.write("Current Input History", st.session_state.history)
+    # st.sidebar.write("Current Output History", st.session_state.output_history)
+    # st.sidebar.write("Current MCQ History", st.session_state.mcq_history)
     # st.write(f'My Current Question: {my_ask}')
+    
+    
+    tab1_download_str = []
+    
+    # ENTITY_MEMORY_CONVERSATION_TEMPLATE
+    # Display the conversation history using an expander, and allow the user to download it
+    with st.expander("Long Answer Conversation", expanded=True):
+        for i in range(len(st.session_state['output_history'])-1, -1, -1):
+            st.info(st.session_state["history"][i],icon="🧐")
+            st.success(st.session_state["output_history"][i], icon="🤖")
+            tab1_download_str.append(st.session_state["history"][i])
+            tab1_download_str.append(st.session_state["output_history"][i])
+        
+        # Can throw error - requires fix
+        tab1_download_str = '\n'.join(tab1_download_str)
+        if tab1_download_str:
+            st.download_button('Download',tab1_download_str)
+
+    # Display stored conversation sessions in the sidebar
+    # for i, sublist in enumerate(st.session_state.stored_session):
+    #         with st.sidebar.expander(label= f"Conversation-Session:{i}"):
+    #             st.write(sublist)
 
 with tab2:
     
@@ -893,7 +915,7 @@ with tab3:
         if st.session_state.past != []:
             with st.expander("Short Q/A History", expanded=False):
                 st.session_state.entity_memory.buffer
-    with st.sidebar.expander("🛠️ ", expanded=True):
+    with st.expander("🛠️ ", expanded=True):
         MODEL = st.selectbox(label='Model', options=['gpt-3.5-turbo','text-davinci-003','text-davinci-002','code-davinci-002'])
         K = st.number_input(' (#)Summary of prompts to consider',min_value=3,max_value=1000)
 
