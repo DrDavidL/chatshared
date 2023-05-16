@@ -308,7 +308,7 @@ with tab1:
 
     if st.sidebar.button("Clear Memory of Current Conversation"):
         st.session_state.history = []
-        st.sidebar.write("Working memory is cleared; input/output still listed for you!")
+        st.sidebar.write("Working memory is cleared; long answer output still saved for you!")
 
     # st.button("Clear Input Field", on_click=clear_text)
 
