@@ -37,9 +37,12 @@ if 'mcq_history' not in st.session_state:
 
 API_O = st.secrets["OPENAI_API_KEY"]
 # Define Streamlit app layout
+
+
 st.title("Medimate Assistant2")
-st.write("David Liebovitz, MD Northwestern University")
-st.write("Last updated 5/16/23")
+with st.expander('About Medimate'):
+    st.write("Author: David Liebovitz, MD, Northwestern University")
+    st.write("Last updated 5/16/23")
 
 def set_prefix():
     if prefix_context == "Master Clinician Explaining to Junior Clinician":
@@ -916,9 +919,9 @@ with tab3:
     #     if st.session_state.past != []:
     #         with st.expander("Short Q/A History", expanded=False):
     #             st.session_state.entity_memory.buffer
-    with st.expander("🛠️ ", expanded=False):
+    with st.expander("🛠️ Change the GPT model if you'd like ", expanded=False):
         MODEL = st.selectbox(label='Model', options=['gpt-3.5-turbo','text-davinci-003','text-davinci-002','code-davinci-002'])
-        K = st.number_input(' (#)Summary of prompts to consider',min_value=3,max_value=1000)
+        # K = st.number_input(' (#)Summary of prompts to consider',min_value=3,max_value=1000)
 
     # Set up the Streamlit app layout
     st.write("🤖 Clinical Pearls 🧠")
@@ -1163,7 +1166,7 @@ with tab4:
         st.write(
         f"""
         <div style="display: flex; align-items: center; margin-left: 0;">
-            <h3 style="display: inline-block;"> PDF Analysis</h1>
+            <h3 style="display: inline-block;"> </h1>
             <sup style="margin-left:5px;font-size:small; color: green;"></sup>
         </div>
         """,
@@ -1176,7 +1179,7 @@ with tab4:
         
         
         # st.sidebar.title("Settings and Preliminary Outputs")
-        num_eval_questions =st.number_input("First set the number of questions to generate:", min_value=1, max_value=50, value=10, step=1)
+        num_eval_questions =st.number_input("Specify how many questions you'd like to generate:", min_value=1, max_value=50, value=10, step=1)
         
         embedding_option = "OpenAI Embeddings"
 
@@ -1200,7 +1203,7 @@ with tab4:
         else:
             os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 
-        uploaded_files = st.file_uploader("Upload a PDF or TXT Document", type=[
+        uploaded_files = st.file_uploader("Now, upload your PDF or TXT Document", type=[
                                         "pdf", "txt"], accept_multiple_files=True)
 
         if uploaded_files:
