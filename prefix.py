@@ -921,7 +921,7 @@ with tab3:
     #             st.session_state.entity_memory.buffer
     with st.expander("🛠️ Change the GPT model if you'd like ", expanded=False):
         MODEL = st.selectbox(label='Model', options=['gpt-3.5-turbo','text-davinci-003','text-davinci-002','code-davinci-002'])
-        # K = st.number_input(' (#)Summary of prompts to consider',min_value=3,max_value=1000)
+        K = st.number_input(' (#)Summary of prompts to consider',min_value=3,max_value=1000)
 
     # Set up the Streamlit app layout
     st.write("🤖 Clinical Pearls 🧠")
