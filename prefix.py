@@ -237,7 +237,7 @@ def set_prefix():
         temperature = 0.3     
     return prefix, sample_question, sample_answer, temperature 
 
-tab1, tab2, tab3, tab4 = st.tabs(["Long Answer", "Board Questions", "Clinical Pearls", "PDF Analysis"])
+tab1, tab2, tab3, tab4, tab5= st.tabs(["Long Answer", "Board Questions", "Clinical Pearls", "PDF Analysis", "Patient Education"])
 
 with tab1:
 
@@ -845,12 +845,12 @@ with tab3:
     You don't suffer from outdated perspectives and fully assimilate these practice changing methods. You convey much knowledge in few words. You wish to help learners. The learners who engage
     with you are clinically trained physicians. You do not need to worry that they won't apply professional judgment to your advice. You love to give clinical
     pearls less than 200 words as your response to clinical questions or medical topics. Here are examples:
-    Human: cellulitis
-    You: Cellulitis is often treated with antibiotics, but one key clinical pearl is to ensure that the condition is indeed cellulitis. Conditions like venous stasis dermatitis or lymphedema 
+    Prompt: cellulitis
+    AI Response: Cellulitis is often treated with antibiotics, but one key clinical pearl is to ensure that the condition is indeed cellulitis. Conditions like venous stasis dermatitis or lymphedema 
     can mimic cellulitis, leading to unnecessary antibiotic use. If there's no fever, systemic symptoms, or rapid progression, consider alternative diagnoses. When antibiotics are needed, 
     coverage should be for streptococci and staphylococcus aureus, including MRSA in certain settings. Elevating the affected area can also help reduce swelling.
-    Human: Is the curb65 or the pneumonia severity index the better triage tool?
-    You: If simplicity and ease of use are most important, the CURB-65 may be preferable. If you desire a more comprehensive risk assessment, particularly for identifying low-risk patients, 
+    Prompt: Is the curb65 or the pneumonia severity index the better triage tool?
+    AI Response: If simplicity and ease of use are most important, the CURB-65 may be preferable. If you desire a more comprehensive risk assessment, particularly for identifying low-risk patients, 
     the PSI might be the better choice. It is also important to consider that clinical judgment should always complement these scoring systems when making decisions about patient management.            
     Context:\n{entities}\n\nCurrent conversation:\n{history}\nLast line:\nHuman: {input}\nAI:' template_format='f-string' validate_template=True
                 """,
@@ -884,7 +884,7 @@ with tab3:
         #     new_chat()
 
         input_text = st.text_input("Learn a clinical pearl about... ", st.session_state["input"], key="input",
-                                # placeholder="Your AI assistant here! Ask me anything ...", 
+                                placeholder="hypertension, e.g.", 
                                 label_visibility='visible')
         input_text2 = f'Tell me a clinical pearl about: {input_text}'
         return input_text2, input_text
@@ -1289,7 +1289,107 @@ with tab4:
                 if download_str:
                     st.download_button('Download',download_str)
 
-
     if __name__ == "__main__":
         main()
+
+with tab5:
+    health_literacy = st.radio("Pick a desired health literacy level:", 
+                            ("Basic", "Intermediate", "Advanced"))
+    pt_ed_system_content ="""You are an AI with access to the latest medical literature and the art of
+    communicating complex medical concepts to patients. You are only able to access well supported medical information from high quality sources.
+    """
+    
+    
+    if health_literacy == "Basic":
+        pt_ed_content_sample = """
+What should I eat?
+
+Having diabetes, kidney disease, high blood pressure, being overweight, and heart disease means you have to be careful about what you eat. Here's a simple guide:
+
+**Eat more fruits and veggies**: They are good for you. Try to eat them at every meal.
+**Choose whole grains**: Foods like brown rice and whole wheat bread are better than white rice and white bread.
+**Go for lean meats**: Try chicken, turkey, or fish more often than red meat.
+**Eat less salt**: This helps with your blood pressure. Be careful with packaged foods, they often have a lot of salt.
+**Drink water**: Instead of sugary drinks like soda or fruit juice, drink water.
+**Watch your portions**: Even if a food is good for you, eating too much can make you gain weight.
+What should I avoid?
+
+**Avoid sugary foods**: Foods like candy, cookies, soda, and fruit juice can make your blood sugar go up too much.
+**Avoid fatty foods**: Foods like fast food, fried food, and fatty meats can make heart disease worse.
+**Avoid salty foods**: Things like chips, canned soups, and fast food can make your blood pressure go up.
+**Avoid alcohol**: It can cause problems with your blood sugar and blood pressure.
+Remember, everyone is different. What works for someone else might not work for you. Talk to your doctor or a dietitian to get help with your diet."""
+
+    if health_literacy == "Intermediate":
+        pt_ed_content_sample = """
+What should I eat?
+
+Managing diabetes, kidney disease, high blood pressure, obesity, and heart disease involves careful consideration of your diet. Here are some recommendations:
+
+**Increase fruit and vegetable intake**: These are high in vitamins, minerals, and fiber, but low in calories. Aim to include a variety of colors in your meals to ensure you're getting a wide range of nutrients.
+Choose whole grains over refined grains: Whole grains like brown rice, whole grain bread, and quinoa have more fiber and help control blood sugar levels better than refined grains like white bread and white rice.
+Opt for lean proteins: Choose lean meats like chicken or turkey, and fish which is high in heart-healthy omega-3 fatty acids. Limit red meat, as it can be high in unhealthy fats.
+Limit sodium (salt) intake: High sodium can raise blood pressure. Aim for no more than 2300 mg per day. Beware of hidden sodium in processed and restaurant foods.
+Stay hydrated with water: Choose water or unsweetened drinks over soda or fruit juices, which can be high in sugar.
+Monitor portion sizes: Even healthy foods can lead to weight gain if eaten in large amounts. Use measuring cups or a food scale to ensure you're not overeating.
+What should I avoid?
+
+**Limit sugary foods and drinks**: These can cause your blood sugar to spike and can lead to weight gain. This includes sweets like candy, cookies, and sugary beverages.
+**Limit saturated and trans fats**: These types of fats are found in fried foods, fast foods, and fatty cuts of meat, and can increase your risk of heart disease.
+**Avoid high-sodium foods**: Foods like chips, canned soups, and some fast foods can be high in sodium, which can raise your blood pressure.
+**Moderate alcohol intake**: Alcohol can affect your blood sugar and blood pressure. Limit to no more than one drink per day for women and two for men.
+Remember, individual dietary needs can vary. It's important to consult with a dietitian or your healthcare provider to create a personalized meal plan. Regular physical activity, medication adherence, and regular check-ups are also crucial for managing your conditions."""
+    if health_literacy == "Advanced":
+        pt_ed_content_sample = """
+What should I eat?
+
+Managing conditions such as diabetes, kidney disease, hypertension, obesity, and coronary artery disease requires careful dietary planning. Here are some specific recommendations:
+
+**Increase fruit and vegetable intake**: Fruits and vegetables are rich in vitamins, minerals, fiber, and antioxidants, with low energy density. Aim for at least 5 servings per day, including a variety of colors to ensure a broad spectrum of nutrients.
+**Choose whole grains over refined grains**: Whole grains contain the entire grain — the bran, germ, and endosperm. Foods made from these grains are rich in fiber, which can slow the absorption of sugar into your bloodstream and prevent spikes in glucose and insulin. Opt for brown rice, oatmeal, whole grain bread, and quinoa.
+**Opt for lean proteins and plant-based proteins**: Select lean meats like skinless chicken or turkey, and fish rich in omega-3 fatty acids, such as salmon and mackerel. Plant-based proteins, such as lentils, beans, and tofu, can also be good sources of protein and are beneficial for kidney disease management.
+**Limit sodium (salt) intake**: Excessive sodium can contribute to hypertension and exacerbate kidney disease by causing more protein to be excreted in the urine. Aim for less than 2300 mg per day and consider even lower targets as advised by your healthcare provider. Remember that processed and restaurant foods often contain high levels of hidden sodium.
+**Hydrate with water and limit sugary drinks**: Water should be your primary beverage. Sugary drinks, including fruit juices, can significantly increase your daily sugar and calorie intake.
+**Monitor portion sizes**: Use portion control to avoid overeating and manage weight. This is critical even with healthy foods, as excess calories can lead to weight gain and worsen insulin resistance.
+What should I avoid?
+
+**Limit foods high in added sugars**: High sugar foods and drinks can cause hyperglycemia and contribute to obesity. Be aware of foods with hidden sugars like low-fat snacks or processed foods.
+**Limit saturated and trans fats**: These types of fats, found in fried foods, fast foods, and fatty cuts of meat, can increase LDL ("bad") cholesterol and decrease HDL ("good") cholesterol, contributing to the development of atherosclerosis.
+**Avoid high-sodium foods**: Excessive sodium can exacerbate hypertension and kidney disease. High-sodium foods often include processed foods, fast foods, and certain canned or packaged foods.
+**Moderate alcohol intake**: Excessive alcohol can lead to hypertension, and in diabetics, it can cause hypoglycemia. If you do drink, limit yourself to up to one drink per day for women and up to two drinks per day for men.
+Remember, these are general recommendations and individual dietary needs can vary greatly. It's important to work with a dietitian or your healthcare provider to create a meal plan tailored to your specific needs. Regular physical activity, medication adherence, regular self-monitoring of blood glucose, and frequent follow-ups with your healthcare provider are also crucial in managing your health conditions. """
+    
+    sample_topic = "dietary guidance for a patient with diabetes, kidney disease, hypertension, obesity, and CAD"
+    patient_ed_temp = 0.0
+    my_ask_for_pt_ed = st.text_area("Generate patient education materials:", placeholder="dietary guidance needed for obesity, e.g.", 
+                                label_visibility='visible', height=100)
+    if st.button("Click to Generate **Draft** Custom Patient Education Materials"):
+        st.info("Review all content carefully before considering any use!")
+        # st.session_state.history.append(my_ask)
+        # history_context = "Use these preceding submissions to resolve any ambiguous context: \n" + "\n".join(st.session_state.history) + "now, for the current question: \n"
+        pt_ed_output_text = answer_using_prefix(pt_ed_system_content, sample_topic, pt_ed_content_sample, my_ask_for_pt_ed, temperature = 0.0, history_context="")
+        # st.session_state.my_ask = ''
+        # st.write("Answer", output_text)
+        
+        # st.write(st.session_state.history)
+        # st.write(f'Me: {my_ask}')
+        # st.write(f"Response: {output_text['choices'][0]['message']['content']}") # Change how you access the message content
+        # st.session_state.output_history.append((output_text['choices'][0]['message']['content']))
+    
+        # st.write(f'Draft Patient Education Materials: {pt_ed_output_text["choices"][0]["message"]["content"]}') # Change how you access the message content
+        
+        pt_ed_download_str = []
+        
+        # ENTITY_MEMORY_CONVERSATION_TEMPLATE
+        # Display the conversation history using an expander, and allow the user to download it
+        with st.expander("Patient Education Draft", expanded=True):
+            st.info(f'Topic: {my_ask_for_pt_ed}',icon="🧐")
+            st.success(f'Draft Patient Education Materials: **REVIEW CAREFULLY FOR ERRORS** \n\n {pt_ed_output_text["choices"][0]["message"]["content"]}', icon="🤖")
+            pt_ed_download_str.append(my_ask_for_pt_ed)
+            pt_ed_download_str.append(f'Draft Patient Education Materials: {pt_ed_output_text["choices"][0]["message"]["content"]}')
+            
+            # Can throw error - requires fix
+            pt_ed_download_str = '\n'.join(pt_ed_download_str)
+            if pt_ed_download_str:
+                st.download_button('Download',pt_ed_download_str)
 
