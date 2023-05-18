@@ -39,10 +39,11 @@ API_O = st.secrets["OPENAI_API_KEY"]
 # Define Streamlit app layout
 
 
-st.title("Medimate Assistant2")
+st.title("Medimate Assistant")
+st.write("ALPHA version 0.2")
 with st.expander('About Medimate'):
     st.write("Author: David Liebovitz, MD, Northwestern University")
-    st.write("Last updated 5/16/23")
+    st.write("Last updated 5/18/23")
 
 def set_prefix():
     if prefix_context == "Master Clinician Explaining to Junior Clinician":
@@ -240,7 +241,7 @@ def set_prefix():
         temperature = 0.3     
     return prefix, sample_question, sample_answer, temperature 
 
-tab1, tab2, tab3, tab4, tab5= st.tabs(["Long Answer", "Board Questions", "Clinical Pearls", "PDF Analysis", "Patient Education"])
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Long Answer", "Board Questions", "Clinical Pearls", "PDF Analysis", "Patient Education", "PubMed Assist"])
 
 with tab1:
 
@@ -1396,3 +1397,85 @@ Remember, these are general recommendations and individual dietary needs can var
             if pt_ed_download_str:
                 st.download_button('Download',pt_ed_download_str)
 
+with tab6:
+    pick_strategy = st.radio("Pick a desired health literacy level:", 
+                            ("Specific - terms are mapped to MeSH and are major topics of the article", "Broad - terms are mapped to MeSH"))
+    pubmed_system_content ="""You are a medical librarian who is an expert user of PubMed for medical literature searching. 
+
+    """
+    
+    
+    if pick_strategy == "Specific - terms are mapped to MeSH and are major topics of the article":
+        pubmed_url = """ You interpret submitted concept terms in the following stepwise manner:
+    
+1. If a term is a Medical Subject Heading (MeSH), apply it directly as the MeSH term. 
+2. If a term does not map to a MeSH,  find the closest MeSH term that captures the essence of the submitted term. If there is no close MeSH term in meaning, use the term as a keyword search.
+3. If a term is a MeSH term, but is not a major topic of the article, do not use it. Use the [majr] tag to limit terms to major topics.
+4. Appropriately combine terms per the prompt using "and" and "not" to create a PubMed search string.
+5. Generate a URL for the PubMed search string that also sorts results with most recent articles appearing first.
+6. Double check that the URL is valid, accurate, and complete. If not, fix. 
+
+https://pubmed.ncbi.nlm.nih.gov/?term=%28%28%28%22Humans%22%5Bmajr%5D%29+AND+%22Staphylococcus+aureus%22%5Bmajr%5D%29+AND+%22Therapeutics%22%5Bmajr%5D%29+NOT+%22Inpatients%22%5Bmajr%5D&sort=date&size=200
+
+"""
+
+    if pick_strategy == "Broad - terms are mapped to MeSH":
+        pubmed_url = """ You interpret submitted concept terms in the following stepwise manner:
+    
+1. If a term is a Medical Subject Heading (MeSH), apply it directly as the MeSH term. 
+2. If a term does not map to a MeSH,  find the closest MeSH term that captures the essence of the submitted term. If there is no close MeSH term in meaning, use the term as a keyword search.
+3. Appropriately combine terms per the prompt using "and" and "not" to create a PubMed search string.
+4. Generate a URL for the PubMed search string that also sorts results with most recent articles appearing first.
+5. Double check that the URL is valid, accurate, and complete. If not, fix. 
+
+
+https://pubmed.ncbi.nlm.nih.gov/?sort=date&term=(((%22Humans%22%5BMesh%5D)+AND+%22Staphylococcus+aureus%22%5BMesh%5D)+AND+%22Therapeutics%22%5BMesh%5D)+NOT+%22Inpatients%22%5BMesh%5D
+
+"""
+
+    if pick_strategy == "Very Broad - terms include all fields":
+        pubmed_url = """
+You interpret submitted concept terms in the following stepwise manner:
+    
+1. If a term is a Medical Subject Heading (MeSH), apply it directly as the MeSH term. 
+2. If a term does not map to a MeSH,  find the closest MeSH term that captures the essence of the submitted term. If there is no close MeSH term in meaning, use the term as a keyword search.
+3. Appropriately combine Mesh and keywords with "or" for the largest set of optios and also combine terms per the prompt using "and" and "not" to create a PubMed search string.
+4. Generate a URL for the PubMed search string that also sorts results with most recent articles appearing first.
+5. Double check that the URL is valid, accurate, and complete. If not, fix. 
+
+https://pubmed.ncbi.nlm.nih.gov/?sort=date&term=(((%22Humans%22%5BMesh%5D)+AND+%22Staphylococcus+aureus%22%5BMesh%5D)+AND+%22Therapeutics%22%5BMesh%5D)+NOT+%22Inpatients%22%5BMesh%5D
+
+"""
+    
+    sample_topic = "search for human studies about treatments for staph aureus in humans who are not hospitalized."
+    my_ask_for_pubmed = st.text_area("Generate a URL for my PubMed search:", placeholder="humans, ace inhibitors, CHF, e.g.", 
+                                label_visibility='visible', height=100)
+    if st.button("Click to Generate a Ready to Use PubMed link"):
+        # st.info("Review all content carefully before considering any use!")
+        # st.session_state.history.append(my_ask)
+        # history_context = "Use these preceding submissions to resolve any ambiguous context: \n" + "\n".join(st.session_state.history) + "now, for the current question: \n"
+        pubmed_output_text = answer_using_prefix(pubmed_system_content, sample_topic, pubmed_url, my_ask_for_pubmed, temperature = 0.0, history_context="")
+        # st.session_state.my_ask = ''
+        # st.write("Answer", output_text)
+        
+        # st.write(st.session_state.history)
+        # st.write(f'Me: {my_ask}')
+        # st.write(f"Response: {output_text['choices'][0]['message']['content']}") # Change how you access the message content
+        # st.session_state.output_history.append((output_text['choices'][0]['message']['content']))
+    
+        # st.write(f'Draft Patient Education Materials: {pt_ed_output_text["choices"][0]["message"]["content"]}') # Change how you access the message content
+        
+        pubmed_download_str = []
+        
+        # ENTITY_MEMORY_CONVERSATION_TEMPLATE
+        # Display the conversation history using an expander, and allow the user to download it
+        with st.expander("PubMed URL", expanded=True):
+            st.info(f'Topic: {my_ask_for_pubmed}',icon="🧐")
+            st.success(f'Your custom PubMed URL: \n\n {pubmed_output_text["choices"][0]["message"]["content"]}', icon="🤖")
+            pubmed_download_str.append(my_ask_for_pubmed)
+            pubmed_download_str.append(f'Draft Patient Education Materials: {pubmed_output_text["choices"][0]["message"]["content"]}')
+            
+            # Can throw error - requires fix
+            pubmed_download_str = '\n'.join(pubmed_download_str)
+            if pubmed_download_str:
+                st.download_button('Download',pubmed_download_str)
