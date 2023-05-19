@@ -1275,8 +1275,10 @@ with tab4:
 
             # Question and answering
             user_question = st.text_input("Please enter your own question about the PDF(s):")
+            
             if user_question:
-                answer = fn_qa_run(_qa, user_question)
+                index_context = "Use only the reference document for knowledge. If the content is not covered in the document, please indicate the document does not address that topic. " + user_question
+                answer = fn_qa_run(_qa, index_context)
                 st.session_state.pdf_user_question.append(user_question)  
                 st.session_state.pdf_user_answer.append(answer)  
                 # st.write("Answer:", answer)
