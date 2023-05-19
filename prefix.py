@@ -1401,52 +1401,50 @@ Remember, these are general recommendations and individual dietary needs can var
 
 with tab6:
     pick_strategy = st.radio("Pick a desired health literacy level:", 
-                            ("Specific - terms are mapped to MeSH and are major topics of the article", "Broad - terms are mapped to MeSH"))
-    pubmed_system_content ="""You are a medical librarian who is an expert user of PubMed for medical literature searching. 
+                            ("Specific - terms are mapped to MeSH and are major topics of the article", "Broad - terms are mapped to MeSH", "Assistant to translate question into an effective search"))
+    pubmed_system_content ="""You are a medical librarian who is an expert user of PubMed for medical literature searching. You generate web client
+    links to PubMed searches to help researchers be efficient and effective. You follow an approach at least as good as this to ensure MeSH terms
+    are used appropriately:
+    
+1. Terms should be tagged using MeSH. 
+2. If a submitted concept does not map to a MeSH, you find the closest MeSH term that captures the essence of the submitted term and use that term with the mesh tag. If there is no synonymous MeSH term, you use the submitted concept as a keyword search.
+3. You appropriately combine terms per the submitted prompt using "and" , "or", and  "not" to create a PubMed search that captures the user's intent.
+4. You display a fully complete link to the resulting PubMed search output website showing the most recent articles first.
+5. You double check that the URL is valid, accurate, and complete. If not, fix. 
 
     """
     
     
     if pick_strategy == "Specific - terms are mapped to MeSH and are major topics of the article":
-        pubmed_url = """ You interpret submitted concept terms in the following stepwise manner:
-    
-1. If a term is a Medical Subject Heading (MeSH), apply it directly as the MeSH term. 
-2. If a term does not map to a MeSH,  find the closest MeSH term that captures the essence of the submitted term. If there is no close MeSH term in meaning, use the term as a keyword search.
-3. If a term is a MeSH term, but is not a major topic of the article, do not use it. Use the [majr] tag to limit terms to major topics.
-4. Appropriately combine terms per the prompt using "and" and "not" to create a PubMed search string.
-5. Generate a URL for the PubMed search string that also sorts results with most recent articles appearing first.
-6. Double check that the URL is valid, accurate, and complete. If not, fix. 
+        pubmed_url = """CAVEAT: For this input, you retrieve only  major [majr] topics of the article. Therefore Mesh is replaced
+        with majr in the PubMed lin. This is a common approach to ensure the search is not too broad.
+
+Response:        
+Here is a link to your PubMed search:
 
 https://pubmed.ncbi.nlm.nih.gov/?term=%28%28%28%22Humans%22%5Bmajr%5D%29+AND+%22Staphylococcus+aureus%22%5Bmajr%5D%29+AND+%22Therapeutics%22%5Bmajr%5D%29+NOT+%22Inpatients%22%5Bmajr%5D&sort=date&size=200
 
 """
 
     if pick_strategy == "Broad - terms are mapped to MeSH":
-        pubmed_url = """ You interpret submitted concept terms in the following stepwise manner:
-    
-1. If a term is a Medical Subject Heading (MeSH), apply it directly as the MeSH term. 
-2. If a term does not map to a MeSH,  find the closest MeSH term that captures the essence of the submitted term. If there is no close MeSH term in meaning, use the term as a keyword search.
-3. Appropriately combine terms per the prompt using "and" and "not" to create a PubMed search string.
-4. Generate a URL for the PubMed search string that also sorts results with most recent articles appearing first.
-5. Double check that the URL is valid, accurate, and complete. If not, fix. 
-
+        pubmed_url = """(for this specific search, you include (Mesh OR all fields) for submitted concepts to ensure a broad, current search.)
+        
+Here is a link to your PubMed search:
 
 https://pubmed.ncbi.nlm.nih.gov/?sort=date&term=(((%22Humans%22%5BMesh%5D)+AND+%22Staphylococcus+aureus%22%5BMesh%5D)+AND+%22Therapeutics%22%5BMesh%5D)+NOT+%22Inpatients%22%5BMesh%5D
 
 """
 
-    if pick_strategy == "Very Broad - terms include all fields":
-        pubmed_url = """
-You interpret submitted concept terms in the following stepwise manner:
-    
-1. If a term is a Medical Subject Heading (MeSH), apply it directly as the MeSH term. 
-2. If a term does not map to a MeSH,  find the closest MeSH term that captures the essence of the submitted term. If there is no close MeSH term in meaning, use the term as a keyword search.
-3. Appropriately combine Mesh and keywords with "or" for the largest set of optios and also combine terms per the prompt using "and" and "not" to create a PubMed search string.
-4. Generate a URL for the PubMed search string that also sorts results with most recent articles appearing first.
-5. Double check that the URL is valid, accurate, and complete. If not, fix. 
+    if pick_strategy == "Assistant to translate question into an effective search":
+        pubmed_url = """CAVEAT: Generate a PubMed url that will be likely to include articles that answer the question:
 
-https://pubmed.ncbi.nlm.nih.gov/?sort=date&term=(((%22Humans%22%5BMesh%5D)+AND+%22Staphylococcus+aureus%22%5BMesh%5D)+AND+%22Therapeutics%22%5BMesh%5D)+NOT+%22Inpatients%22%5BMesh%5D
+Sample question: "Do senolytics help patients live longer?"
+Sample Response:
+To generate a PubMed URL that is likely to include articles addressing the question of whether senolytics help patients live longer, you can use the following search query:
 
+https://pubmed.ncbi.nlm.nih.gov/?term=senolytics%20AND%20longevity
+
+This URL includes the search term "senolytics" in combination with "longevity." By clicking on this link, it should take you directly to the PubMed search results page containing articles that investigate the potential effects of senolytics on extending lifespan or promoting longevity.
 """
     
     sample_topic = "search for human studies about treatments for staph aureus in humans who are not hospitalized."
