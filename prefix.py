@@ -1400,7 +1400,8 @@ Remember, these are general recommendations and individual dietary needs can var
                 st.download_button('Download',pt_ed_download_str)
 
 with tab6:
-    pick_strategy = st.radio("Pick a desired health literacy level:", 
+    st.info("PICO format for inputs is coming! Experimenting with various approaches...")
+    pick_strategy = st.radio("Pick a desired search approach:", 
                             ("Specific - terms are mapped to MeSH and are major topics of the article", "Broad - terms are mapped to MeSH", "Assistant to translate question into an effective search"))
     pubmed_system_content ="""You are a medical librarian who is an expert user of PubMed for medical literature searching. You generate web client
     links to PubMed searches to help researchers be efficient and effective. You follow an approach at least as good as this to ensure MeSH terms
