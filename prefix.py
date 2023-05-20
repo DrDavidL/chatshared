@@ -241,7 +241,7 @@ def set_prefix():
         temperature = 0.3     
     return prefix, sample_question, sample_answer, temperature 
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Long Answer", "Board Questions", "Clinical Pearls", "PDF Analysis", "Patient Education", "PubMed Assist"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Long Answer", "Board Questions", "Clinical Pearls", "PDF Analysis", "Patient Education", "PubMed Assist", "DDx"])
 
 with tab1:
 
@@ -1530,3 +1530,91 @@ https://pubmed.ncbi.nlm.nih.gov/?term=(%22Systolic%20Heart%20Failure%22%5BMeSH%2
             pubmed_download_str = '\n'.join(pubmed_download_str)
             if pubmed_download_str:
                 st.download_button('Download',pubmed_download_str)
+                
+with tab7:
+    
+    st.title("Differential Diagnosis Generator")
+    st.header("Patient Information")
+
+    age = st.slider("Age", 0, 120, 50)
+    sex_at_birth = st.radio("Sex at Birth", options=["Female", "Male", "Other"], horizontal=True)
+    presenting_symptoms = st.text_input("Presenting Symptoms")
+    duration_of_symptoms = st.text_input("Duration of Symptoms")
+    past_medical_history = st.text_input("Past Medical History")
+    current_medications = st.text_input("Current Medications")
+    relevant_social_history = st.text_input("Relevant Social History")
+    physical_examination_findings = st.text_input("Physical Examination Findings")
+    lab_or_imaging_results = st.text_input("Any relevant Laboratory or Imaging results")
+    ddx_prompt = f"""
+    Patient Information:
+    - Age: {age}
+    - Sex: {sex_at_birth}
+    - Presenting Symptoms: {presenting_symptoms}
+    - Duration of Symptoms: {duration_of_symptoms}
+    - Past Medical History: {past_medical_history}
+    - Current Medications: {current_medications}
+    - Relevant Social History: {relevant_social_history}
+    - Physical Examination Findings: {physical_examination_findings}
+    - Any relevant Laboratory or Imaging results: {lab_or_imaging_results}
+    
+    Generate Differential Diagnosis:
+    """
+    
+    ddx_prefix = """You have the knowledge and wisdom of an expert diagnostician. You are able to generate a differential diagnosis 
+    based on the patient information provided. You are able to generate a differential diagnosis for new cases that is at least as good as the sample case provided:"""
+
+    ddx_sample_question = """Patient Information:
+- Age: 54
+- Sex: Male
+- Presenting Symptoms: Persistent dry cough, weight loss, fatigue
+- Duration of Symptoms: 3 months
+- Past Medical History: Smoker for 30 years
+- Current Medications: Lisinopril for hypertension
+- Relevant Social History: Works in construction
+- Physical Examination Findings: Decreased breath sounds on right side of chest
+- Any relevant Laboratory or Imaging results: Chest X-ray shows mass in right lung
+
+Generate Differential Diagnosis:
+"""
+    ddx_sample_answer = """Here is a list of possible diagnoses:
+    
+*High Probability:*
+
+🌟 1. **Lung Cancer:** Given the patient's long history of smoking and the presence of a mass in the lung, lung cancer is a significant concern.
+
+
+*Moderate Probability:*
+1. **Chronic Obstructive Pulmonary Disease (COPD):** The patient's history of smoking also makes COPD a potential diagnosis, but this wouldn't typically cause a mass on the chest X-ray.
+2. **Tuberculosis (TB):** If the patient has been exposed to TB, this could explain his symptoms and the mass, particularly if the mass is a result of a Ghon complex or calcified granuloma.
+3. **Pneumonia:** Although less likely given the duration of symptoms and presence of a mass, a complicated pneumonia could potentially appear as a mass on a chest X-ray.
+4. **Pulmonary Abscess:** Similar to pneumonia, an abscess could potentially appear as a mass, though this is less likely without other signs of acute infection.
+5. **Fungal Infection:** Certain fungal infections, such as histoplasmosis or aspergillosis, can mimic cancer on imaging and cause chronic respiratory symptoms, particularly in certain geographic areas or with certain exposures.
+
+
+*Lower Probability:*
+1. **Sarcoidosis:** This is less common, but can cause similar symptoms and imaging findings.
+2. **Lung Adenoma or Pulmonary Hamartoma:** These benign tumors could theoretically cause a mass, but are less likely and typically don't cause symptoms unless they're large.
+3. **Silicosis:** Given the patient's occupational exposure, this could be a consideration, but typically causes a more diffuse process rather than a single mass.
+"""
+    if st.button("Generate Differential Diagnosis"):
+        # Your differential diagnosis generation code goes here
+        ddx_output_text = answer_using_prefix(ddx_prefix, ddx_sample_question, ddx_sample_answer, ddx_prompt, temperature=0.0, history_context='')
+        # st.write("Differential Diagnosis will appear here...")
+        
+        ddx_download_str = []
+        
+        # ENTITY_MEMORY_CONVERSATION_TEMPLATE
+        # Display the conversation history using an expander, and allow the user to download it
+
+        # ENTITY_MEMORY_CONVERSATION_TEMPLATE
+        # Display the conversation history using an expander, and allow the user to download it
+        with st.expander("Differential Diagnosis Draft", expanded=True):
+            st.info(f'Topic: {ddx_prompt}',icon="🧐")
+            st.success(f'Educational Use Only: **NOT REVIEWED FOR CLINICAL CARE** \n\n {ddx_output_text["choices"][0]["message"]["content"]}', icon="🤖")
+            ddx_download_str.append(ddx_prompt)
+            ddx_download_str.append(f'Draft Patient Education Materials: {ddx_output_text["choices"][0]["message"]["content"]}')
+            
+            # Can throw error - requires fix
+            ddx_download_str = '\n'.join(ddx_download_str)
+            if ddx_download_str:
+                st.download_button('Download',ddx_download_str)
