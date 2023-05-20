@@ -1534,7 +1534,7 @@ https://pubmed.ncbi.nlm.nih.gov/?term=(%22Systolic%20Heart%20Failure%22%5BMeSH%2
 with tab7:
     
     st.title("Differential Diagnosis Generator")
-    st.header("Patient Information")
+    st.write("Add as many details as possible to improve the response. The prompts do not request any unique details; however, *modify values and do not include dates to ensure privacy.*")
 
     age = st.slider("Age", 0, 120, 50)
     sex_at_birth = st.radio("Sex at Birth", options=["Female", "Male", "Other"], horizontal=True)
