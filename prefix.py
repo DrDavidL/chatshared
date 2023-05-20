@@ -1400,9 +1400,9 @@ Remember, these are general recommendations and individual dietary needs can var
                 st.download_button('Download',pt_ed_download_str)
 
 with tab6:
-    st.info("PICO format for inputs is coming! Experimenting with various approaches...")
+    st.info("PICO format included!")
     pick_strategy = st.radio("Pick a desired search approach:", 
-                            ("Specific - terms are mapped to MeSH and are major topics of the article", "Broad - terms are mapped to MeSH", "Assistant to translate question into an effective search"))
+                            ("Specific - terms are mapped to MeSH and are major topics of the article", "Broad - terms are mapped to MeSH", "Assistant to translate question into an effective search", "PICO"))
     pubmed_system_content ="""You are a medical librarian who is an expert user of PubMed for medical literature searching. You generate web client
     links to PubMed searches to help researchers be efficient and effective. You follow an approach at least as good as this to ensure MeSH terms
     are used appropriately:
@@ -1447,10 +1447,60 @@ https://pubmed.ncbi.nlm.nih.gov/?term=senolytics%20AND%20longevity
 
 This URL includes the search term "senolytics" in combination with "longevity." By clicking on this link, it should take you directly to the PubMed search results page containing articles that investigate the potential effects of senolytics on extending lifespan or promoting longevity.
 """
-    
+    if pick_strategy == "PICO":
+        pico_population = st.text_input("Population:", placeholder="patients with CHF, e.g.")
+        pico_intervention = st.text_input("Intervention:", placeholder="ace inhibitors, e.g.")
+        pico_comparison = st.text_input("Comparison:", placeholder="placebo, e.g.")
+        pico_outcome = st.text_input("Outcome:", placeholder="mortality, e.g.")
+        pico_topic = f"p:{pico_population} i: {pico_intervention} c: {pico_comparison} o: {pico_outcome}"
+        pubmed_url = """CAVEAT: Generate a PubMed URL from the PICO input provided in the prompt. Apply this approach to any PICO input:
+Step-by-step instructions:
+
+1. **Identifying the PICO components:** We start by identifying the components of your PICO question.
+
+   - **P**atient or **P**opulation: Patients with systolic heart failure
+   - **I**ntervention: Use of ACE inhibitors
+   - **C**omparison: Placebo
+   - **O**utcome: Mortality
+
+2. **Formulating the Search Query:** We then translate each of these components into a search string. I used a combination of Medical Subject Headings (MeSH terms), which are standardised terms used by PubMed to index articles, and general search terms.
+
+   - The general format of the string for each component is `("<Term>"[MeSH Terms] OR "<Term>"[All Fields])`
+   - I combined these strings using the AND operator, to ensure that all terms are present in the resulting articles.
+   - I also added `"humans"[MeSH Terms]` and `"Clinical Trial"[ptyp]` to ensure the search focuses on clinical trials in humans.
+
+3. **Constructing the PubMed URL:** Once we have the search string, we construct a PubMed URL. The base URL for a PubMed search is `https://pubmed.ncbi.nlm.nih.gov/?term=`
+   - To this, we append the search string, which needs to be URL-encoded to ensure it can be correctly interpreted by web browsers. URL encoding replaces special characters with a "%" followed by two hexadecimal digits. For example, a space is replaced with "%20".
+
+Here's the detailed breakdown of the search string:
+
+- `("Systolic Heart Failure"[MeSH Terms] OR "Systolic Heart Failure"[All Fields])` -> This ensures that the articles have to do with systolic heart failure.
+- `AND ("ACE Inhibitors"[MeSH Terms] OR "ACE Inhibitors"[All Fields])` -> This ensures that the articles also deal with ACE inhibitors.
+- `AND ("Placebo"[MeSH Terms] OR "Placebo"[All Fields])` -> This ensures that the articles involve a comparison with a placebo.
+- `AND ("Mortality"[MeSH Terms] OR "Mortality"[All Fields])` -> This ensures that the articles consider mortality as an outcome.
+- `AND "humans"[MeSH Terms]` -> This ensures that the articles are about studies in humans.
+- `AND "Clinical Trial"[ptyp]` -> This ensures that the articles are reporting on clinical trials.
+
+Once we have this search string, we URL-encode it and append it to the base URL to get the final URL:
+
+```
+https://pubmed.ncbi.nlm.nih.gov/?term=(%22Systolic%20Heart%20Failure%22%5BMeSH%20Terms%5D%20OR%20%22Systolic%20Heart%20Failure%22%5BAll%20Fields%5D)%20AND%20(%22ACE%20Inhibitors%22%5BMeSH%20Terms%5D%20OR%20%22ACE%20Inhibitors%22%5BAll%20Fields%5D)%20AND%20(%22Placebo%22%5BMeSH%20Terms%5D%20OR%20%22Placebo%22%5BAll%20Fields%5D)%20AND%20(%22Mortality%22%5BMeSH%20Terms%5D%20OR%20%22Mortality%22%5BAll%20Fields%5D)%20AND%20%22humans%22%5BMeSH%20Terms%
+        
+Sample PICO input: p: patients with CHF i: ace inhibitors c: placebo o: mortality
+
+Sample Response: 
+
+Here is a link to your PubMed search for P = patients with CHF, I = ace inhibitors, C = placebo, O = mortality:
+https://pubmed.ncbi.nlm.nih.gov/?term=(%22Systolic%20Heart%20Failure%22%5BMeSH%20Terms%5D%20OR%20%22Systolic%20Heart%20Failure%22%5BAll%20Fields%5D)%20AND%20(%22ACE%20Inhibitors%22%5BMeSH%20Terms%5D%20OR%20%22ACE%20Inhibitors%22%5BAll%20Fields%5D)%20AND%20(%22Placebo%22%5BMeSH%20Terms%5D%20OR%20%22Placebo%22%5BAll%20Fields%5D)%20AND%20(%22Mortality%22%5BMeSH%20Terms%5D%20OR%20%22Mortality%22%5BAll%20Fields%5D)%20AND%20%22humans%22%5BMeSH%20Terms%
+
+        """
+        
     sample_topic = "search for human studies about treatments for staph aureus in humans who are not hospitalized."
-    my_ask_for_pubmed = st.text_area("Generate a URL for my PubMed search:", placeholder="humans, ace inhibitors, CHF, e.g.", 
+    if pick_strategy != "PICO":
+        my_ask_for_pubmed = st.text_area("Generate a URL for my PubMed search:", placeholder="humans, ace inhibitors, CHF, e.g.", 
                                 label_visibility='visible', height=100)
+    else:
+        my_ask_for_pubmed = pico_topic
     if st.button("Click to Generate a Ready to Use PubMed link"):
         # st.info("Review all content carefully before considering any use!")
         # st.session_state.history.append(my_ask)
