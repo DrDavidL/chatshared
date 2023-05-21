@@ -241,7 +241,7 @@ def set_prefix():
         temperature = 0.3     
     return prefix, sample_question, sample_answer, temperature 
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Long Answer", "Board Questions", "Clinical Pearls", "PDF Analysis", "Patient Education", "PubMed Assist", "DDx"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["Long Answer", "Boards", "Pearls", "PDFs", "Patient Ed", "PubMed Assist", "DDx", "Side Effects"])
 
 with tab1:
 
@@ -266,6 +266,7 @@ with tab1:
         # history_context = "Use these preceding submissions to address any ambiguous context for the input weighting the first three items most: \n" + "\n".join(st.session_state.history) + "now, for the current question: \n"
         completion = openai.ChatCompletion.create( # Change the function Completion to ChatCompletion
         model = 'gpt-3.5-turbo',
+        # model = 'gpt-4',
         messages = [ # Change the prompt parameter to the messages parameter
                 {'role': 'system', 'content': prefix},
                 {'role': 'user', 'content': sample_question},
@@ -1618,3 +1619,67 @@ Generate Differential Diagnosis:
             ddx_download_str = '\n'.join(ddx_download_str)
             if ddx_download_str:
                 st.download_button('Download',ddx_download_str)
+                
+with tab8:
+    st.title("Symptom Side Effect Assessment")
+    st.write("The tool should look for side effects individually or in combination.")
+
+    se_age = st.slider("Age ", 0, 120, 50)
+    se_sex_at_birth = st.radio("Sex at Birth ", options=["Female", "Male", "Other"], horizontal=True)
+    se_meds = st.text_input("Current Medications", placeholder="lisinopril, e.g.")
+    se_symptoms = st.text_input("Symptoms to Assess as Possible Side Effects", placeholder="cough, e.g.")
+    
+    se_prompt = f"""
+    Patient Information:
+    - Age: {se_age}
+    - Sex: {se_sex_at_birth}
+    - Medications: {se_meds}
+    - Symptoms: {se_symptoms}
+
+    """
+    
+    se_prefix = """ You are assisting a medical professional. Consider only high-quality evidence from clinical trial data, official drug information leaflets, and professional healthcare guidelines, and provide insight into whether these symptoms could be potential side effects from the listed medications individually or in combination.
+Your advice will be used as a preliminary analysis and will be further reviewed by a medical professional. With this context, could you please analyze the medications and symptoms submitted and provide insight into whether these symptoms could be potential side effects from the listed medications individually or in combination. 
+Double check your response to ensure that it is accurate and complete assess each medication for the side effects and also looks at combinations of meds. If not, make appropriate changes to the response."""
+
+    se_sample_question = """Patient Information:
+- Age: 54
+- Sex: Male
+- Medications: aspirin, lisinopril, metformin, simvastatin, albuterol
+- Symptoms: dizziness, cough, skin rash, nausea, increased urination
+
+Could you please analyze this information and provide insight into whether these symptoms could be potential side effects from the listed medications individually or in combination? 
+Your advice will be used as a preliminary analysis and will be further reviewed by me."
+"""
+    se_sample_answer = """Based on the medications listed:
+
+- Aspirin - Nausea could be a potential side effect of this medication, although it's relatively rare.
+- Lisinopril - Dizziness and cough are known side effects of Lisinopril. It might be worth discussing these symptoms with the patient's doctor to adjust the dosage or consider an alternative medication.
+- Metformin - Increased urination can be a side effect of Metformin. This might indicate that the dosage needs to be adjusted.
+- Simvastatin - A skin rash could potentially be a reaction to Simvastatin. This should be reported to the healthcare provider immediately, as it may indicate an allergy.
+- Albuterol - None of the listed symptoms are commonly associated with Albuterol use.
+
+Considering the combinations of medications, Lisinopril and Metformin together could potentially enhance the effect of dizziness and increased urination. However, it's important to remember that many factors could contribute to these symptoms, 
+including the patient's overall health status, other medications, and lifestyle factors."""
+    if st.button("Assess for Side Effects"):
+        # Your differential diagnosis generation code goes here
+        se_output_text = answer_using_prefix(se_prefix, se_sample_question, se_sample_answer, se_prompt, temperature=0.0, history_context='')
+        # st.write("Differential Diagnosis will appear here...")
+        
+        se_download_str = []
+        
+        # ENTITY_MEMORY_CONVERSATION_TEMPLATE
+        # Display the conversation history using an expander, and allow the user to download it
+
+        # ENTITY_MEMORY_CONVERSATION_TEMPLATE
+        # Display the conversation history using an expander, and allow the user to download it
+        with st.expander("Differential Diagnosis Draft", expanded=True):
+            st.info(f'Scenario: {se_prompt}',icon="🧐")
+            st.success(f'Educational Use Only: **NOT REVIEWED FOR CLINICAL CARE** \n\n {se_output_text["choices"][0]["message"]["content"]}', icon="🤖")
+            se_download_str.append(se_prompt)
+            se_download_str.append(f'Draft Patient Education Materials: {se_output_text["choices"][0]["message"]["content"]}')
+            
+            # Can throw error - requires fix
+            se_download_str = '\n'.join(se_download_str)
+            if se_download_str:
+                st.download_button('Download',se_download_str)
