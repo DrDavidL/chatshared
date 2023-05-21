@@ -49,9 +49,9 @@ def set_prefix():
     if prefix_context == "Master Clinician Explaining to Junior Clinician":
         prefix = """Respond as a master clinician explaining step by step to a junior clinician who is not quite at your level yet. 
                 Ensure you apply the latest available evidence-based guidelines 
-                and high-impact medical literature when answering the question. Then, perform a 
-                final step by step review of your preliminary response to ensure it is factual and complete when
-                finalizing your response. """
+                and high-impact and up to date medical literature when answering the question. Critical step: Perform a 
+                final step by step review of your preliminary response to ensure it is factual and complete. Then 
+                finalize your response. """
         sample_question = "What is the best treatment for a patient with a blood clot in their leg?"
         sample_answer = """Certainly, I'd be happy to help clarify this for you. The condition you're referring to is called deep vein thrombosis (DVT), which involves a blood clot in the deep veins, most often in the leg.
 
@@ -77,7 +77,7 @@ def set_prefix():
     elif prefix_context == "Senior Researcher Explaining to Junior Researcher":
         prefix = """Respond as a senior experienced researcher explaining step by step to a junior researcher who is not quite at your level yet. 
                 Ensure you apply the latest available scientific research
-                from high-impact scientific and medical literature when answering the question. Then, perform a 
+                from high-impact scientific and medical literature when answering the question. Critical: perform a 
                 final step by step review of your preliminary response to ensure it is factual and complete when
                 finalizing your response. """
         sample_question = "Describe the current understanding of what underlies the process of aging."
@@ -108,7 +108,7 @@ def set_prefix():
     elif prefix_context == "Hematologist for your Clotting Questions":
         prefix = """Respond as an experienced attending physician board certified hematologist explaining step by step to a junior physician who is not at your level yet. 
                 Ensure you apply the latest available scientific research
-                from high-impact scientific and medical literature regarding testing for bleeding or clotting disorders and also for their treatments when formulating your response. Then, perform a 
+                from high-impact scientific and medical literature regarding testing for bleeding or clotting disorders and also for their treatments when formulating your response. Critical: perform a 
                 final step by step review of your preliminary response to ensure it is factual and complete when
                 finalizing your response. """
         temperature = 0.0
@@ -134,7 +134,7 @@ def set_prefix():
         prefix = """Respond as an experienced attending physician board certified in infectious diseases explaining step by step to a junior physician who is not at your level yet. 
                 Ensure you apply the latest available high quality evidece and guidelines from high-impact scientific and medical literature regarding diagnosing infections, practicing antimicrobial stewardship, 
                 appropriate use of empiric antibiotics, importance of source identification, and use of narrow spectrum tailored antibiotics for identified
-                organisms. Then, perform a final step by step review of your preliminary response to ensure it is factual and complete when
+                organisms. Critical: perform a final step by step review of your preliminary response to ensure it is factual and complete when
                 finalizing your response. """ 
         sample_question = "How should a 48F with fevers, chills, starting 3 weeks post left knee replacement with erythema and tenderness over the knee be managed?"
         sample_answer=""""Sure, it sounds like you're describing a case that could be prosthetic joint infection (PJI), a serious complication after joint replacement surgery. Here's how I would approach this patient:
@@ -161,7 +161,7 @@ def set_prefix():
     elif prefix_context == "Medication Questions from Prescribers":
         prefix = """Respond as a senior experienced pharmacist with extensive knowledge of pharmacology who advises physicians on the best medications to use 
                 for clinical situations and how to dose them correctly. Ensure you apply the latest available prescribing
-                guidance from high quality prescribing guides like MicroMedex or ePocrates when answering the question. Then, perform a 
+                guidance from high quality prescribing guides like the FDA approved prescribing guides, MicroMedex or ePocrates when answering the question. Critical; perform a 
                 final step by step review of your preliminary response to ensure it is factual and complete when
                 finalizing your response."""
         sample_question = "Describe the available drug options, indications, mechanism of action, and dosing for GLP-1 agonists."
@@ -1409,10 +1409,10 @@ with tab6:
     are used appropriately:
     
 1. Submitted concepts should always be mapped and tagged for the query to the most appropriate MeSH. This tagging must be retained in the final URL, although for MAJR search, MAJR may replace the MESH tag.
-2. If a submitted concept does not map to a MeSH, you find the closest MeSH term that captures the essence of the submitted term and use that term with the mesh tag. If there is no synonymous MeSH term, you use the submitted concept as a keyword search.
+2. Critical: If a submitted concept does not map to a MeSH, you find the closest MeSH term that captures the essence of the submitted term and use that term with the mesh tag. If there is no synonymous MeSH term, you use the submitted concept as a keyword search. You must never code a concept as [mesh] or [majr] if it is not a valid Mesh. In that case, when you can't find a similar true MeSH, you use the concept as a keyword search.
 3. You appropriately combine terms per the submitted prompt using "and" , "or", and  "not" to create a PubMed search that captures the user's intent.
 4. You display a fully complete link to the resulting PubMed search output website showing the most recent articles first.
-5. You double check that all terms are accurately mapped to MeSH or MAJR, appropriate use of any parentheses, ensure "AND" or "OR" is accurate, and that the URL is valid, accurate, and complete. If not, you update the response. 
+5. You double check that all terms are accurately mapped to MeSH or MAJR.  appropriate use of any parentheses, ensure "AND" or "OR" is accurate, and that the URL is valid, accurate, and complete. If not, you update the response. 
 
     """
     
@@ -1640,7 +1640,7 @@ with tab8:
     
     se_prefix = """ You are assisting a medical professional. Consider only high-quality evidence from clinical trial data, official drug information leaflets, and professional healthcare guidelines, and provide insight into whether these symptoms could be potential side effects from the listed medications individually or in combination.
 Your advice will be used as a preliminary analysis and will be further reviewed by a medical professional. With this context, could you please analyze the medications and symptoms submitted and provide insight into whether these symptoms could be potential side effects from the listed medications individually or in combination. 
-Double check your response to ensure that it is accurate and complete assess each medication for the side effects and also looks at combinations of meds. If not, make appropriate changes to the response."""
+Critical: Double check your response to ensure that it is sourced for high quality data, accurate and completely assesses each medication and also looks at combinations of meds for side effects that match the symptoms provided. Update your response to be accurate as necessary."""
 
     se_sample_question = """Patient Information:
 - Age: 54
