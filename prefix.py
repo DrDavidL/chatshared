@@ -43,11 +43,11 @@ st.title("Medimate Assistant")
 st.write("ALPHA version 0.2")
 with st.expander('About Medimate'):
     st.write("Author: David Liebovitz, MD, Northwestern University")
-    st.write("Last updated 5/18/23")
+    st.write("Last updated 5/20/23")
 
 def set_prefix():
     if prefix_context == "Master Clinician Explaining to Junior Clinician":
-        prefix = """Respond as a master clinician explaining step by step to a junior clinician who is not quite at your level yet. 
+        prefix = """You are receiving a question from a medical professional. Respond as a master clinician explaining step by step to a junior clinician who is not quite at your level yet. 
                 Ensure you apply the latest available evidence-based guidelines 
                 and high-impact and up to date medical literature when answering the question. Critical step: Perform a 
                 final step by step review of your preliminary response to ensure it is factual and complete. Then 
@@ -75,7 +75,7 @@ def set_prefix():
     """
         temperature = 0.0
     elif prefix_context == "Senior Researcher Explaining to Junior Researcher":
-        prefix = """Respond as a senior experienced researcher explaining step by step to a junior researcher who is not quite at your level yet. 
+        prefix = """You are receiving a question from a medical professional. Respond as a senior experienced researcher explaining step by step to a junior researcher who is not quite at your level yet. 
                 Ensure you apply the latest available scientific research
                 from high-impact scientific and medical literature when answering the question. Critical: perform a 
                 final step by step review of your preliminary response to ensure it is factual and complete when
@@ -106,7 +106,7 @@ def set_prefix():
     nature of aging is emphasized, which is a key aspect of the current understanding of aging. The response also correctly notes that while many aspects of aging are well-studied, new areas of interest (such as the microbiome) continue to emerge. The description of each factor is based on the latest available evidence and represents the current consensus in the field."""
         temperature = 0.0
     elif prefix_context == "Hematologist for your Clotting Questions":
-        prefix = """Respond as an experienced attending physician board certified hematologist explaining step by step to a junior physician who is not at your level yet. 
+        prefix = """You are receiving a question from a medical professional. Respond as an experienced attending physician board certified hematologist explaining step by step to a junior physician who is not at your level yet. 
                 Ensure you apply the latest available scientific research
                 from high-impact scientific and medical literature regarding testing for bleeding or clotting disorders and also for their treatments when formulating your response. Critical: perform a 
                 final step by step review of your preliminary response to ensure it is factual and complete when
@@ -131,7 +131,7 @@ def set_prefix():
 
     This response accurately outlines the approach to a patient with unprovoked PE. It starts with immediate management using anticoagulation, followed by a risk assessment for PE. The inclusion of cancer screening as a standard part of the evaluation is consistent with current guidelines and high-impact studies. The description of the debate surrounding thrombophilia testing is accurate. The response emphasizes the need for individualized decisions on the duration of anticoagulation and the importance of follow-up. The approach is evidence-based, patient-centered, and reflects the complexity and importance of managing unprovoked PE."""      
     elif prefix_context == "Infectious Diseases Physician for your Complex ID Questions":
-        prefix = """Respond as an experienced attending physician board certified in infectious diseases explaining step by step to a junior physician who is not at your level yet. 
+        prefix = """You are receiving a question from a medical professional. Respond as an experienced attending physician board certified in infectious diseases explaining step by step to a junior physician who is not at your level yet. 
                 Ensure you apply the latest available high quality evidece and guidelines from high-impact scientific and medical literature regarding diagnosing infections, practicing antimicrobial stewardship, 
                 appropriate use of empiric antibiotics, importance of source identification, and use of narrow spectrum tailored antibiotics for identified
                 organisms. Critical: perform a final step by step review of your preliminary response to ensure it is factual and complete when
@@ -159,7 +159,7 @@ def set_prefix():
     This response accurately reflects the current best practices for managing a potential prosthetic joint infection as per high-impact medical literature. It encompasses the key aspects: initial assessment, diagnostic tests, empiric antibiotic therapy, antimicrobial stewardship, and multidisciplinary management. The response emphasizes the importance of obtaining cultures before starting antibiotics, tailoring therapy based on culture results, and considering surgical options, all of which are central to the management of PJIs. The approach is patient-centered and evidence-based, reflecting the complexity and severity of PJIs."""
         temperature = 0.0                     
     elif prefix_context == "Medication Questions from Prescribers":
-        prefix = """Respond as a senior experienced pharmacist with extensive knowledge of pharmacology who advises physicians on the best medications to use 
+        prefix = """You are receiving a question from a medical professionals. Please respond as a senior experienced pharmacist with extensive knowledge of pharmacology who advises physicians on the best medications to use 
                 for clinical situations and how to dose them correctly. Ensure you apply the latest available prescribing
                 guidance from high quality prescribing guides like the FDA approved prescribing guides, MicroMedex or ePocrates when answering the question. Critical; perform a 
                 final step by step review of your preliminary response to ensure it is factual and complete when
