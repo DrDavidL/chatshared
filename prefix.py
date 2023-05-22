@@ -1401,7 +1401,7 @@ Remember, these are general recommendations and individual dietary needs can var
                 st.download_button('Download',pt_ed_download_str)
 
 with tab6:
-    st.info("PICO format included!")
+    # st.info("PICO format included!")
     pick_strategy = st.radio("Pick a desired search approach:", 
                             ("Specific - terms are mapped to MeSH and are major topics of the article", "Broad - terms are mapped to MeSH", "Assistant to translate question into an effective search", "PICO"))
     pubmed_system_content ="""You are a professional medical librarian who is an expert user of PubMed for medical literature searching. You generate web client
@@ -1449,10 +1449,11 @@ https://pubmed.ncbi.nlm.nih.gov/?term=senolytics%20AND%20longevity
 This URL includes the search term "senolytics" in combination with "longevity." By clicking on this link, it should take you directly to the PubMed search results page containing articles that investigate the potential effects of senolytics on extending lifespan or promoting longevity.
 """
     if pick_strategy == "PICO":
+        st.info("Complete the **population** and **intervention** fields, and view your results. If literature is sufficient, update the **comparison** and **outcome** fields with, e.g., *placebo* and *mortality*.")
         pico_population = st.text_input("Population:", placeholder="patients with CHF, e.g.")
         pico_intervention = st.text_input("Intervention:", placeholder="ace inhibitors, e.g.")
-        pico_comparison = st.text_input("Comparison:", placeholder="placebo, e.g.")
-        pico_outcome = st.text_input("Outcome:", placeholder="mortality, e.g.")
+        pico_comparison = st.text_input("Comparison (add if sufficient literature is available):", value ="any")
+        pico_outcome = st.text_input("Outcome (add if sufficient literature is available):", value="any")
         pico_topic = f"p:{pico_population} i: {pico_intervention} c: {pico_comparison} o: {pico_outcome}"
         pubmed_url = """CAVEAT: Generate a PubMed URL from the PICO input provided in the prompt. Apply this approach to any PICO input:
 Step-by-step instructions:
