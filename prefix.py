@@ -333,7 +333,7 @@ with tab1:
     
     # ENTITY_MEMORY_CONVERSATION_TEMPLATE
     # Display the conversation history using an expander, and allow the user to download it
-    with st.expander("Long Answer Conversation", expanded=True):
+    with st.expander("Long Answer Conversation Thread", expanded=True):
         for i in range(len(st.session_state['output_history'])-1, -1, -1):
             st.info(st.session_state["history"][i],icon="🧐")
             st.success(st.session_state["output_history"][i], icon="🤖")
