@@ -1,4 +1,3 @@
-#Integrating OpenAI with Streamlit: With Example  Source Code Explainer 4/29/2023 --Author Ajit Dash
 import streamlit as st
 import openai
 import os  
