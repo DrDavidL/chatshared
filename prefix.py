@@ -42,7 +42,7 @@ def check_password():
         st.text_input(
             "Password", type="password", on_change=password_entered, key="password"
         )
-        st.write("Contact David Liebovitz if you'd like an updated password.")
+        st.write("*Please contact David Liebovitz, MD if you need an updated password for access.*")
         return False
     elif not st.session_state["password_correct"]:
         # Password not correct, show input + error.
