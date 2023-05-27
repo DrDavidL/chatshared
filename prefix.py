@@ -73,7 +73,7 @@ if check_password():
     st.write("ALPHA version 0.2")
     with st.expander('About Medimate'):
         st.write("Author: David Liebovitz, MD, Northwestern University")
-        st.write("Last updated 5/20/23")
+        st.write("Last updated 5/27/23")
 
     def set_prefix():
         if prefix_context == "Master Clinician Explaining to Junior Clinician":
@@ -1134,7 +1134,7 @@ if check_password():
                 padding: 0px 0px;
                 text-align: center;
             ">
-                <p>Updated 5/15/23</p>
+                <p>Updated 5/27/23</p>
             </div>
             """
 
