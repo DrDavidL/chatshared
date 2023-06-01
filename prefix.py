@@ -1565,8 +1565,12 @@ if check_password():
                     
     with tab7:
         
+    ddx_strategy = st.radio("Choose an approach for a differential diagnosis!", options=["Find Alternative Diagnoses to Consider","Provide Clinical Data"], index=0, key="ddx strategy")
+
+
+    if ddx_strategy == "Provide Clinical Data":    
         st.title("Differential Diagnosis Generator")
-        st.write("Add as many details as possible to improve the response. The prompts do not request any unique details; however, *modify values and do not include dates to ensure privacy.*")
+        st.write("Add as many details as possible to improve the response. The prompts do not request any unique details; however, *modify values and do not include dates to ensure privacy.")
 
         age = st.slider("Age", 0, 120, 50)
         sex_at_birth = st.radio("Sex at Birth", options=["Female", "Male", "Other"], horizontal=True)
@@ -1646,7 +1650,51 @@ if check_password():
                 ddx_download_str = '\n'.join(ddx_download_str)
                 if ddx_download_str:
                     st.download_button('Download',ddx_download_str)
-                    
+    
+    if ddx_strategy == "Find Alternative Diagnoses to Consider":
+        st.title("Alternative Diagnosis Generator")
+        st.write("Avoid premature closure and consider alternative diagnoses*")
+        alt_dx_prompt = st.text_input("Enter your presumed diagnosis.")
+        alt_dx_prefix = """Leverage the combined experience of expert diagnosticians to display a list of alternative diagnoses to consider when given a presumed diagnosis."""
+        alt_dx_sample_question = "Constrictive pericarditis"
+        alt_dx_sample_answer = """Constrictive pericarditis is a relatively rare condition that can be challenging to diagnose, given that its symptoms can be similar to those of several other cardiovascular and systemic disorders. The following is a list of some alternative diagnoses a clinician might consider if initially suspecting constrictive pericarditis:
+
+1. Restrictive Cardiomyopathy: Similar to constrictive pericarditis, restrictive cardiomyopathy can cause reduced filling of the ventricles and can result in similar signs and symptoms.
+
+2. Right Heart Failure: The symptoms of right heart failure such as peripheral edema, ascites, and jugular venous distention can mimic constrictive pericarditis.
+
+3. Tricuspid Regurgitation: The backflow of blood into the right atrium due to valve dysfunction can cause symptoms that overlap with those of constrictive pericarditis.
+
+4. Pericardial Effusion or Tamponade: Fluid accumulation in the pericardial sac can also mimic the symptoms of constrictive pericarditis.
+
+5. Hepatic Cirrhosis: This can cause ascites and peripheral edema, symptoms that can resemble those of constrictive pericarditis.
+
+6. Nephrotic Syndrome: Characterized by heavy proteinuria, hypoalbuminemia, and edema, nephrotic syndrome can cause systemic symptoms that may be mistaken for constrictive pericarditis.
+
+7. Chronic Obstructive Pulmonary Disease (COPD) or Cor Pulmonale: These conditions can cause right-sided heart symptoms that can resemble those of constrictive pericarditis.
+
+8. Pulmonary Hypertension: This condition increases pressure on the right side of the heart and can mimic symptoms of constrictive pericarditis.
+
+9. Superior Vena Cava (SVC) Syndrome: This condition, often caused by a malignancy or thrombosis in the SVC, can present with symptoms similar to constrictive pericarditis.
+
+10. Constrictive Bronchiolitis: Although primarily a pulmonary condition, severe cases can affect the cardiovascular system and mimic constrictive pericarditis.
+
+These are just a few of the conditions that could be considered in a differential diagnosis when constrictive pericarditis is suspected. As with any diagnostic process, a thorough patient history, physical examination, and appropriate investigations are key to reaching an accurate diagnosis."""
+
+        if st.button("Generate Alternative Diagnoses"):
+            alt_dx_output_text = answer_using_prefix(alt_dx_prefix, alt_dx_sample_question, alt_dx_sample_answer, alt_dx_prompt, temperature=0.0, history_context='')
+            alt_dx_download_str = []
+            with st.expander("Alternative Diagnoses Draft", expanded=True):
+                st.info(f'Topic: {alt_dx_prompt}',icon="🧐")
+                st.success(f'Educational Use Only: **NOT REVIEWED FOR CLINICAL CARE** \n\n {alt_dx_output_text["choices"][0]["message"]["content"]}', icon="🤖")
+                alt_dx_download_str.append(alt_dx_prompt)
+                alt_dx_download_str.append(f'Draft Alternative Diagnoses: {alt_dx_output_text["choices"][0]["message"]["content"]}')
+                
+                # Can throw error - requires fix
+                alt_dx_download_str = '\n'.join(alt_dx_download_str)
+                if alt_dx_download_str:
+                    st.download_button('Download',alt_dx_download_str)
+                
     with tab8:
         st.title("Symptom Side Effect Assessment")
         st.write("The tool should look for side effects individually or in combination.")
