@@ -1592,8 +1592,8 @@ if check_password():
         Generate Differential Diagnosis:
         """
         
-        ddx_prefix = """You have the knowledge and wisdom of an expert diagnostician. You are able to generate a differential diagnosis 
-        based on the patient information provided. You are able to generate a differential diagnosis for new cases that is at least as good as the sample case provided:"""
+        ddx_prefix = """You apply the knowledge and wisdom of an expert diagnostician to generate a differential diagnosis 
+    based on the patient context provided. The differential diagnosis is double checked to ensure that it is organized by probability and includes the most applicable diagnoses from each probability category. """
 
         ddx_sample_question = """Patient Information:
     - Age: 54
