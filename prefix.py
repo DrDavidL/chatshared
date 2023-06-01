@@ -1588,8 +1588,6 @@ if check_password():
         - Relevant Social History: {relevant_social_history}
         - Physical Examination Findings: {physical_examination_findings}
         - Any relevant Laboratory or Imaging results: {lab_or_imaging_results}
-        
-        Generate Differential Diagnosis:
         """
         
         ddx_prefix = """You apply the knowledge and wisdom of an expert diagnostician to generate a differential diagnosis 
@@ -1605,8 +1603,6 @@ if check_password():
     - Relevant Social History: Works in construction
     - Physical Examination Findings: Decreased breath sounds on right side of chest
     - Any relevant Laboratory or Imaging results: Chest X-ray shows mass in right lung
-
-    Generate Differential Diagnosis:
     """
         ddx_sample_answer = """Here is a list of possible diagnoses:
         
