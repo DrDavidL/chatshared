@@ -1,3 +1,4 @@
+
 import streamlit as st
 import openai
 import os  
@@ -73,7 +74,7 @@ if check_password():
     st.write("ALPHA version 0.2")
     with st.expander('About Medimate'):
         st.write("Author: David Liebovitz, MD, Northwestern University")
-        st.write("Last updated 5/27/23")
+        st.write("Last updated 5/20/23")
 
     def set_prefix():
         if prefix_context == "Master Clinician Explaining to Junior Clinician":
@@ -1120,214 +1121,210 @@ if check_password():
             return eval_set_full
 
 
-        # ...
-
-        def main():
             
-            foot = f"""
-            <div style="
-                position: fixed;
-                bottom: 0;
-                left: 30%;
-                right: 0;
-                width: 50%;
-                padding: 0px 0px;
-                text-align: center;
-            ">
-                <p>Updated 5/27/23</p>
-            </div>
+        foot = f"""
+        <div style="
+            position: fixed;
+            bottom: 0;
+            left: 30%;
+            right: 0;
+            width: 50%;
+            padding: 0px 0px;
+            text-align: center;
+        ">
+            <p>Updated 5/15/23</p>
+        </div>
+        """
+
+        st.markdown(foot, unsafe_allow_html=True)
+        
+        # Add custom CSS
+        st.markdown(
             """
-
-            st.markdown(foot, unsafe_allow_html=True)
+            <style>
             
-            # Add custom CSS
-            st.markdown(
-                """
-                <style>
+            #MainMenu {visibility: hidden;
+            # }
+                footer {visibility: hidden;
+                }
+                .css-card {
+                    border-radius: 0px;
+                    padding: 30px 10px 10px 10px;
+                    background-color: #f8f9fa;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    margin-bottom: 10px;
+                    font-family: "IBM Plex Sans", sans-serif;
+                    color: black;
+                }
                 
-                #MainMenu {visibility: hidden;
-                # }
-                    footer {visibility: hidden;
-                    }
-                    .css-card {
-                        border-radius: 0px;
-                        padding: 30px 10px 10px 10px;
-                        background-color: #f8f9fa;
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                        margin-bottom: 10px;
-                        font-family: "IBM Plex Sans", sans-serif;
-                        color: black;
-                    }
-                    
-                    .card-tag {
-                        border-radius: 0px;
-                        padding: 1px 5px 1px 5px;
-                        margin-bottom: 10px;
-                        position: absolute;
-                        left: 0px;
-                        top: 0px;
-                        font-size: 0.6rem;
-                        font-family: "IBM Plex Sans", sans-serif;
-                        color: white;
-                        background-color: purple;
-                        }
-                        
-                    .css-zt5igj {left:0;
+                .card-tag {
+                    border-radius: 0px;
+                    padding: 1px 5px 1px 5px;
+                    margin-bottom: 10px;
+                    position: absolute;
+                    left: 0px;
+                    top: 0px;
+                    font-size: 0.6rem;
+                    font-family: "IBM Plex Sans", sans-serif;
+                    color: white;
+                    background-color: purple;
                     }
                     
-                    span.css-10trblm {margin-left:0;
-                    }
-                    
-                    div.css-1kyxreq {margin-top: -40px;
-                    }
-                    
+                .css-zt5igj {left:0;
+                }
+                
+                span.css-10trblm {margin-left:0;
+                }
+                
+                div.css-1kyxreq {margin-top: -40px;
+                }
                 
             
-                    
+        
                 
+            
 
-                </style>
-                """,
-                unsafe_allow_html=True,
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+        # st.sidebar.image("img/logo1.png")
+
+
+    
+
+        st.write(
+        f"""
+        <div style="display: flex; align-items: center; margin-left: 0;">
+            <h3 style="display: inline-block;"> </h1>
+            <sup style="margin-left:5px;font-size:small; color: green;"></sup>
+        </div>
+        """,
+        unsafe_allow_html=True,
             )
-            # st.sidebar.image("img/logo1.png")
+        
+        
 
 
         
+        
+        # st.sidebar.title("Settings and Preliminary Outputs")
+        num_eval_questions =st.number_input("Specify how many questions you'd like to generate:", min_value=1, max_value=50, value=10, step=1)
+        
+        embedding_option = "OpenAI Embeddings"
 
-            st.write(
-            f"""
-            <div style="display: flex; align-items: center; margin-left: 0;">
-                <h3 style="display: inline-block;"> </h1>
-                <sup style="margin-left:5px;font-size:small; color: green;"></sup>
-            </div>
-            """,
-            unsafe_allow_html=True,
-                )
-            
-            
+        
+        retriever_type = "SUPPORT VECTOR MACHINES"
 
+        # Use RecursiveCharacterTextSplitter as the default and only text splitter
+        splitter_type = "RecursiveCharacterTextSplitter"
 
-            
-            
-            # st.sidebar.title("Settings and Preliminary Outputs")
-            num_eval_questions =st.number_input("Specify how many questions you'd like to generate:", min_value=1, max_value=50, value=10, step=1)
-            
-            embedding_option = "OpenAI Embeddings"
-
-            
-            retriever_type = "SUPPORT VECTOR MACHINES"
-
-            # Use RecursiveCharacterTextSplitter as the default and only text splitter
-            splitter_type = "RecursiveCharacterTextSplitter"
-
-            if 'openai_api_key' not in st.session_state:
-                openai_api_key = st.text_input(
-                    'Please enter your OpenAI API key or [get one here](https://platform.openai.com/account/api-keys)', value="", placeholder="Enter the OpenAI API key which begins with sk-")
-                if openai_api_key:
-                    st.session_state.openai_api_key = st.secrets["OPENAI_API_KEY"]
-                    os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
-                else:
-                    #warning_text = 'Please enter your OpenAI API key. Get yours from here: [link](https://platform.openai.com/account/api-keys)'
-                    #warning_html = f'<span>{warning_text}</span>'
-                    #st.markdown(warning_html, unsafe_allow_html=True)
-                    return
-            else:
+        if 'openai_api_key' not in st.session_state:
+            openai_api_key = st.text_input(
+                'Please enter your OpenAI API key or [get one here](https://platform.openai.com/account/api-keys)', value="", placeholder="Enter the OpenAI API key which begins with sk-")
+            if openai_api_key:
+                st.session_state.openai_api_key = st.secrets["OPENAI_API_KEY"]
                 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+            # else:
+            #     #warning_text = 'Please enter your OpenAI API key. Get yours from here: [link](https://platform.openai.com/account/api-keys)'
+            #     #warning_html = f'<span>{warning_text}</span>'
+            #     #st.markdown(warning_html, unsafe_allow_html=True)
+            #     return
+        else:
+            os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 
-            uploaded_files = st.file_uploader("Now, upload your PDF or TXT Document", type=[
-                                            "pdf", "txt"], accept_multiple_files=True)
+        uploaded_files = st.file_uploader("Now, upload your PDF or TXT Document", type=[
+                                        "pdf", "txt"], accept_multiple_files=True)
 
-            if uploaded_files:
-                # Check if last_uploaded_files is not in session_state or if uploaded_files are different from last_uploaded_files
-                if 'last_uploaded_files' not in st.session_state or st.session_state.last_uploaded_files != uploaded_files:
-                    st.session_state.last_uploaded_files = uploaded_files
-                    if 'eval_set' in st.session_state:
-                        del st.session_state['eval_set']
+        if uploaded_files:
+            # Check if last_uploaded_files is not in session_state or if uploaded_files are different from last_uploaded_files
+            if 'last_uploaded_files' not in st.session_state or st.session_state.last_uploaded_files != uploaded_files:
+                st.session_state.last_uploaded_files = uploaded_files
+                if 'eval_set' in st.session_state:
+                    del st.session_state['eval_set']
 
-                # Load and process the uploaded PDF or TXT files.
-                loaded_text = load_docs(uploaded_files)
-                st.write("Documents uploaded and 'read.'")
+            # Load and process the uploaded PDF or TXT files.
+            loaded_text = load_docs(uploaded_files)
+            st.write("Documents uploaded and 'read.'")
 
-                # Split the document into chunks
-                splits = split_texts(loaded_text, chunk_size=1000,
-                                    overlap=100, split_method=splitter_type)
+            # Split the document into chunks
+            splits = split_texts(loaded_text, chunk_size=1000,
+                                overlap=100, split_method=splitter_type)
 
-                # Display the number of text chunks
-                num_chunks = len(splits)
-                st.write(f"Number of text chunks: {num_chunks}")
+            # Display the number of text chunks
+            num_chunks = len(splits)
+            st.write(f"Number of text chunks: {num_chunks}")
 
-                # Embed using OpenAI embeddings
-                    # Embed using OpenAI embeddings or HuggingFace embeddings
+            # Embed using OpenAI embeddings
+                # Embed using OpenAI embeddings or HuggingFace embeddings
 
-                embeddings = OpenAIEmbeddings()
+            embeddings = OpenAIEmbeddings()
 
-                retriever = create_retriever(embeddings, splits, retriever_type)
+            retriever = create_retriever(embeddings, splits, retriever_type)
 
 
-                # Initialize the RetrievalQA chain with streaming output
-                callback_handler = StreamingStdOutCallbackHandler()
-                callback_manager = CallbackManager([callback_handler])
+            # Initialize the RetrievalQA chain with streaming output
+            callback_handler = StreamingStdOutCallbackHandler()
+            callback_manager = CallbackManager([callback_handler])
 
-                chat_openai = ChatOpenAI(
-                    streaming=True, callback_manager=callback_manager, verbose=True, temperature=0)
-                
-                
-                _qa = RetrievalQA.from_chain_type(llm=chat_openai, retriever=retriever, chain_type="stuff", verbose=True)
-                @st.cache_data
-                def fn_qa_run(_qa, user_question):
-                    return _qa.run(user_question)
-                
+            chat_openai = ChatOpenAI(
+                streaming=True, callback_manager=callback_manager, verbose=True, temperature=0)
             
+            
+            _qa = RetrievalQA.from_chain_type(llm=chat_openai, retriever=retriever, chain_type="stuff", verbose=True)
+            @st.cache_data
+            def fn_qa_run(_qa, user_question):
+                return _qa.run(user_question)
+            
+        
 
-                # Check if there are no generated question-answer pairs in the session state
-                
-                if 'eval_set' not in st.session_state:
-                    # Use the generate_eval function to generate question-answer pairs
-                    # num_eval_questions = 10  # Number of question-answer pairs to generate
-                    st.session_state.eval_set = generate_eval(
-                        loaded_text, num_eval_questions, 3000)
+            # Check if there are no generated question-answer pairs in the session state
+            
+            if 'eval_set' not in st.session_state:
+                # Use the generate_eval function to generate question-answer pairs
+                # num_eval_questions = 10  # Number of question-answer pairs to generate
+                st.session_state.eval_set = generate_eval(
+                    loaded_text, num_eval_questions, 3000)
 
-            # Display the question-answer pairs in the sidebar with smaller text
-                for i, qa_pair in enumerate(st.session_state.eval_set):
-                    st.sidebar.markdown(
-                        f"""
-                        <div class="css-card">
-                        <span class="card-tag">Question {i + 1}</span>
-                            <p style="font-size: 12px;">{qa_pair['question']}</p>
-                            <p style="font-size: 12px;">{qa_pair['answer']}</p>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-                    # <h4 style="font-size: 14px;">Question {i + 1}:</h4>
-                    # <h4 style="font-size: 14px;">Answer {i + 1}:</h4>
-                st.write("Ready to answer your questions!")
+        # Display the question-answer pairs in the sidebar with smaller text
+            for i, qa_pair in enumerate(st.session_state.eval_set):
+                st.sidebar.markdown(
+                    f"""
+                    <div class="css-card">
+                    <span class="card-tag">Question {i + 1}</span>
+                        <p style="font-size: 12px;">{qa_pair['question']}</p>
+                        <p style="font-size: 12px;">{qa_pair['answer']}</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+                # <h4 style="font-size: 14px;">Question {i + 1}:</h4>
+                # <h4 style="font-size: 14px;">Answer {i + 1}:</h4>
+            st.write("Ready to answer your questions!")
 
-                # Question and answering
-                user_question = st.text_input("Please enter your own question about the PDF(s):")
-                
-                if user_question:
-                    index_context = "Use only the reference document for knowledge. If the content is not covered in the document, please indicate the document does not address that topic. " + user_question
-                    answer = fn_qa_run(_qa, index_context)
-                    st.session_state.pdf_user_question.append(user_question)  
-                    st.session_state.pdf_user_answer.append(answer)  
-                    # st.write("Answer:", answer)
-                download_str = []
-                with st.expander("PDF Questions", expanded=True):
-                    for i in range(len(st.session_state['pdf_user_answer'])-1, -1, -1):
-                        st.info(st.session_state["pdf_user_question"][i],icon="🧐")
-                        st.success(st.session_state["pdf_user_answer"][i], icon="🤖")
-                        download_str.append(st.session_state["pdf_user_question"][i])
-                        download_str.append(st.session_state["pdf_user_answer"][i])
-                
-                    # Can throw error - requires fix
-                    download_str = '\n'.join(download_str)
-                    if download_str:
-                        st.download_button('Download',download_str)
+            # Question and answering
+            user_question = st.text_input("Please enter your own question about the PDF(s):")
+            
+            if user_question:
+                index_context = "Use only the reference document for knowledge. If the content is not covered in the document, please indicate the document does not address that topic. " + user_question
+                answer = fn_qa_run(_qa, index_context)
+                st.session_state.pdf_user_question.append(user_question)  
+                st.session_state.pdf_user_answer.append(answer)  
+                # st.write("Answer:", answer)
+            download_str = []
+            with st.expander("PDF Questions", expanded=True):
+                for i in range(len(st.session_state['pdf_user_answer'])-1, -1, -1):
+                    st.info(st.session_state["pdf_user_question"][i],icon="🧐")
+                    st.success(st.session_state["pdf_user_answer"][i], icon="🤖")
+                    download_str.append(st.session_state["pdf_user_question"][i])
+                    download_str.append(st.session_state["pdf_user_answer"][i])
+            
+                # Can throw error - requires fix
+                download_str = '\n'.join(download_str)
+                if download_str:
+                    st.download_button('Download',download_str)
 
-        if __name__ == "__main__":
-            main()
+
 
     with tab5:
         health_literacy = st.radio("Pick a desired health literacy level:", 
@@ -1565,12 +1562,8 @@ if check_password():
                     
     with tab7:
         
-    ddx_strategy = st.radio("Choose an approach for a differential diagnosis!", options=["Find Alternative Diagnoses to Consider","Provide Clinical Data"], index=0, key="ddx strategy")
-
-
-    if ddx_strategy == "Provide Clinical Data":    
         st.title("Differential Diagnosis Generator")
-        st.write("Add as many details as possible to improve the response. The prompts do not request any unique details; however, *modify values and do not include dates to ensure privacy.")
+        st.write("Add as many details as possible to improve the response. The prompts do not request any unique details; however, *modify values and do not include dates to ensure privacy.*")
 
         age = st.slider("Age", 0, 120, 50)
         sex_at_birth = st.radio("Sex at Birth", options=["Female", "Male", "Other"], horizontal=True)
@@ -1592,10 +1585,12 @@ if check_password():
         - Relevant Social History: {relevant_social_history}
         - Physical Examination Findings: {physical_examination_findings}
         - Any relevant Laboratory or Imaging results: {lab_or_imaging_results}
+        
+        Generate Differential Diagnosis:
         """
         
-        ddx_prefix = """You apply the knowledge and wisdom of an expert diagnostician to generate a differential diagnosis 
-    based on the patient context provided. The differential diagnosis is double checked to ensure that it is organized by probability and includes the most applicable diagnoses from each probability category. """
+        ddx_prefix = """You have the knowledge and wisdom of an expert diagnostician. You are able to generate a differential diagnosis 
+        based on the patient information provided. You are able to generate a differential diagnosis for new cases that is at least as good as the sample case provided:"""
 
         ddx_sample_question = """Patient Information:
     - Age: 54
@@ -1607,6 +1602,8 @@ if check_password():
     - Relevant Social History: Works in construction
     - Physical Examination Findings: Decreased breath sounds on right side of chest
     - Any relevant Laboratory or Imaging results: Chest X-ray shows mass in right lung
+
+    Generate Differential Diagnosis:
     """
         ddx_sample_answer = """Here is a list of possible diagnoses:
         
@@ -1650,51 +1647,7 @@ if check_password():
                 ddx_download_str = '\n'.join(ddx_download_str)
                 if ddx_download_str:
                     st.download_button('Download',ddx_download_str)
-    
-    if ddx_strategy == "Find Alternative Diagnoses to Consider":
-        st.title("Alternative Diagnosis Generator")
-        st.write("Avoid premature closure and consider alternative diagnoses*")
-        alt_dx_prompt = st.text_input("Enter your presumed diagnosis.")
-        alt_dx_prefix = """Leverage the combined experience of expert diagnosticians to display a list of alternative diagnoses to consider when given a presumed diagnosis."""
-        alt_dx_sample_question = "Constrictive pericarditis"
-        alt_dx_sample_answer = """Constrictive pericarditis is a relatively rare condition that can be challenging to diagnose, given that its symptoms can be similar to those of several other cardiovascular and systemic disorders. The following is a list of some alternative diagnoses a clinician might consider if initially suspecting constrictive pericarditis:
-
-1. Restrictive Cardiomyopathy: Similar to constrictive pericarditis, restrictive cardiomyopathy can cause reduced filling of the ventricles and can result in similar signs and symptoms.
-
-2. Right Heart Failure: The symptoms of right heart failure such as peripheral edema, ascites, and jugular venous distention can mimic constrictive pericarditis.
-
-3. Tricuspid Regurgitation: The backflow of blood into the right atrium due to valve dysfunction can cause symptoms that overlap with those of constrictive pericarditis.
-
-4. Pericardial Effusion or Tamponade: Fluid accumulation in the pericardial sac can also mimic the symptoms of constrictive pericarditis.
-
-5. Hepatic Cirrhosis: This can cause ascites and peripheral edema, symptoms that can resemble those of constrictive pericarditis.
-
-6. Nephrotic Syndrome: Characterized by heavy proteinuria, hypoalbuminemia, and edema, nephrotic syndrome can cause systemic symptoms that may be mistaken for constrictive pericarditis.
-
-7. Chronic Obstructive Pulmonary Disease (COPD) or Cor Pulmonale: These conditions can cause right-sided heart symptoms that can resemble those of constrictive pericarditis.
-
-8. Pulmonary Hypertension: This condition increases pressure on the right side of the heart and can mimic symptoms of constrictive pericarditis.
-
-9. Superior Vena Cava (SVC) Syndrome: This condition, often caused by a malignancy or thrombosis in the SVC, can present with symptoms similar to constrictive pericarditis.
-
-10. Constrictive Bronchiolitis: Although primarily a pulmonary condition, severe cases can affect the cardiovascular system and mimic constrictive pericarditis.
-
-These are just a few of the conditions that could be considered in a differential diagnosis when constrictive pericarditis is suspected. As with any diagnostic process, a thorough patient history, physical examination, and appropriate investigations are key to reaching an accurate diagnosis."""
-
-        if st.button("Generate Alternative Diagnoses"):
-            alt_dx_output_text = answer_using_prefix(alt_dx_prefix, alt_dx_sample_question, alt_dx_sample_answer, alt_dx_prompt, temperature=0.0, history_context='')
-            alt_dx_download_str = []
-            with st.expander("Alternative Diagnoses Draft", expanded=True):
-                st.info(f'Topic: {alt_dx_prompt}',icon="🧐")
-                st.success(f'Educational Use Only: **NOT REVIEWED FOR CLINICAL CARE** \n\n {alt_dx_output_text["choices"][0]["message"]["content"]}', icon="🤖")
-                alt_dx_download_str.append(alt_dx_prompt)
-                alt_dx_download_str.append(f'Draft Alternative Diagnoses: {alt_dx_output_text["choices"][0]["message"]["content"]}')
-                
-                # Can throw error - requires fix
-                alt_dx_download_str = '\n'.join(alt_dx_download_str)
-                if alt_dx_download_str:
-                    st.download_button('Download',alt_dx_download_str)
-                
+                    
     with tab8:
         st.title("Symptom Side Effect Assessment")
         st.write("The tool should look for side effects individually or in combination.")
