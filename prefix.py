@@ -68,7 +68,7 @@ if check_password():
     API_O = st.secrets["OPENAI_API_KEY"]
     # Define Streamlit app layout
 
-
+    st.set_page_config(page_title='Medimate Assistant', layout = 'centered', page_icon = ':stethoscope:', initial_sidebar_state = 'auto')
     st.title("Medimate Assistant")
     st.write("ALPHA version 0.2")
     with st.expander('About Medimate'):
