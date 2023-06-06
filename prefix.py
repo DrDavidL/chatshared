@@ -867,16 +867,10 @@ if check_password():
             st.session_state.mcq_history.append((generated_mcq['choices'][0]['message']['content']))
         
     with tab3:
-        #     """
-        # This is a Python script that serves as a frontend for a conversational AI model built with the `langchain` and `llms` libraries.
-        # The code creates a web application using Streamlit, a Python library for building interactive web apps.
-        # # Author: Avratanu Biswas
-        # # Date: March 11, 2023
-        # """
 
         # # Import necessary libraries
         prompt2=PromptTemplate(
-            template="""You are an advanced AI which has assimilated skills of hundreds of master physicians with decades of current clinical experience. You know the latest medical literature and the art of 
+            template="""You are an advanced AI which has assimilated skills of hundreds of master physicians with decades of current clinical experience and proceeds step by step to ensure accuracy and precision for all responses. You know the latest medical literature and the art of 
         diagnosis and clinical management pearls. Your words are always based on the bulk of the scientific evidence while being in tune for new practice changing high quality research. 
         You don't suffer from outdated perspectives and fully assimilate these practice changing methods. You convey much knowledge in few words. You wish to help learners. The learners who engage
         with you are clinically trained physicians. You do not need to worry that they won't apply professional judgment to your advice. You love to give clinical
@@ -1031,6 +1025,7 @@ if check_password():
         #         del st.session_state.stored_session
 
     with tab4:
+        st.info("📚 Let AI Generate questions and answers from an uploaded PDF for you to learn. Or, ask your own questions!" )
         st.session_state.openai_api_key = st.secrets["OPENAI_API_KEY"]
         if "pdf_user_question" not in st.session_state:
                 st.session_state["pdf_user_question"] = []
@@ -1132,79 +1127,12 @@ if check_password():
             padding: 0px 0px;
             text-align: center;
         ">
-            <p>Updated 5/15/23</p>
+            <p>Updated 6/6/23</p>
         </div>
         """
 
         st.markdown(foot, unsafe_allow_html=True)
         
-        # Add custom CSS
-        st.markdown(
-            """
-            <style>
-            
-            #MainMenu {visibility: hidden;
-            # }
-                footer {visibility: hidden;
-                }
-                .css-card {
-                    border-radius: 0px;
-                    padding: 30px 10px 10px 10px;
-                    background-color: #f8f9fa;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    margin-bottom: 10px;
-                    font-family: "IBM Plex Sans", sans-serif;
-                    color: black;
-                }
-                
-                .card-tag {
-                    border-radius: 0px;
-                    padding: 1px 5px 1px 5px;
-                    margin-bottom: 10px;
-                    position: absolute;
-                    left: 0px;
-                    top: 0px;
-                    font-size: 0.6rem;
-                    font-family: "IBM Plex Sans", sans-serif;
-                    color: white;
-                    background-color: purple;
-                    }
-                    
-                .css-zt5igj {left:0;
-                }
-                
-                span.css-10trblm {margin-left:0;
-                }
-                
-                div.css-1kyxreq {margin-top: -40px;
-                }
-                
-            
-        
-                
-            
-
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
-        # st.sidebar.image("img/logo1.png")
-
-
-    
-
-        st.write(
-        f"""
-        <div style="display: flex; align-items: center; margin-left: 0;">
-            <h3 style="display: inline-block;"> </h1>
-            <sup style="margin-left:5px;font-size:small; color: green;"></sup>
-        </div>
-        """,
-        unsafe_allow_html=True,
-            )
-        
-        
-
 
         
         
@@ -1330,7 +1258,7 @@ if check_password():
         health_literacy = st.radio("Pick a desired health literacy level:", 
                                 ("Basic", "Intermediate", "Advanced"))
         pt_ed_system_content ="""You are an AI with access to the latest medical literature and the art of
-        communicating complex medical concepts to patients. You are only able to access well supported medical information from high quality sources.
+        communicating complex medical concepts to patients. You are only able to access well supported medical information from high quality sources. You always proceed step by step to ensure complete accuracy and precision to your responses.
         """
         
         
@@ -1591,7 +1519,7 @@ if check_password():
             """
             
             ddx_prefix = """You apply the knowledge and wisdom of an expert diagnostician to generate a differential diagnosis 
-        based on the patient context provided. The differential diagnosis is double checked to ensure that it is organized by probability and includes the most applicable diagnoses from each probability category. """
+        based on the patient context provided. You always proceed step by step to ensure accuracy and precision in your responses. You double ck your generated differential diagnosis to ensure that it is organized by probability and includes the most applicable diagnoses from each probability category. """
 
             ddx_sample_question = """Patient Information:
         - Age: 54
@@ -1651,7 +1579,7 @@ if check_password():
             st.title("Alternative Diagnosis Generator")
             st.write("Avoid premature closure and consider alternative diagnoses*")
             alt_dx_prompt = st.text_input("Enter your presumed diagnosis.")
-            alt_dx_prefix = """Leverage the combined experience of expert diagnosticians to display a list of alternative diagnoses to consider when given a presumed diagnosis."""
+            alt_dx_prefix = """Leverage the combined experience of expert diagnosticians to display a list of alternative diagnoses to consider when given a presumed diagnosis. You proceed step by step to ensure accuracy, completeness, and precision in your responses."""
             alt_dx_sample_question = "Constrictive pericarditis"
             alt_dx_sample_answer = """Constrictive pericarditis is a relatively rare condition that can be challenging to diagnose, given that its symptoms can be similar to those of several other cardiovascular and systemic disorders. The following is a list of some alternative diagnoses a clinician might consider if initially suspecting constrictive pericarditis:
 
@@ -1713,7 +1641,7 @@ if check_password():
         
         se_prefix = """ You are assisting a medical professional. Consider only high-quality evidence from clinical trial data, official drug information leaflets, and professional healthcare guidelines, and provide insight into whether these symptoms could be potential side effects from the listed medications individually or in combination.
     Your advice will be used as a preliminary analysis and will be further reviewed by a medical professional. With this context, could you please analyze the medications and symptoms submitted and provide insight into whether these symptoms could be potential side effects from the listed medications individually or in combination. 
-    Critical: Double check your response to ensure that it is sourced for high quality data, accurate and completely assesses each medication and also looks at combinations of meds for side effects that match the symptoms provided. Update your response to be accurate as necessary."""
+    Critical: You proceed in a step by step fashion and also double check your response to ensure that it is sourced for high quality data, accurate and completely assesses each medication and also looks at combinations of meds for side effects that match the symptoms provided. Update your response to be accurate as necessary."""
 
         se_sample_question = """Patient Information:
     - Age: 54
