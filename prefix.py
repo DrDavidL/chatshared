@@ -1561,92 +1561,137 @@ if check_password():
                     st.download_button('Download',pubmed_download_str)
                     
     with tab7:
-        
-        st.title("Differential Diagnosis Generator")
-        st.write("Add as many details as possible to improve the response. The prompts do not request any unique details; however, *modify values and do not include dates to ensure privacy.*")
+        ddx_strategy = st.radio("Choose an approach for a differential diagnosis!", options=["Find Alternative Diagnoses to Consider","Provide Clinical Data"], index=0, key="ddx strategy")
 
-        age = st.slider("Age", 0, 120, 50)
-        sex_at_birth = st.radio("Sex at Birth", options=["Female", "Male", "Other"], horizontal=True)
-        presenting_symptoms = st.text_input("Presenting Symptoms")
-        duration_of_symptoms = st.text_input("Duration of Symptoms")
-        past_medical_history = st.text_input("Past Medical History")
-        current_medications = st.text_input("Current Medications")
-        relevant_social_history = st.text_input("Relevant Social History")
-        physical_examination_findings = st.text_input("Physical Examination Findings")
-        lab_or_imaging_results = st.text_input("Any relevant Laboratory or Imaging results")
-        ddx_prompt = f"""
-        Patient Information:
-        - Age: {age}
-        - Sex: {sex_at_birth}
-        - Presenting Symptoms: {presenting_symptoms}
-        - Duration of Symptoms: {duration_of_symptoms}
-        - Past Medical History: {past_medical_history}
-        - Current Medications: {current_medications}
-        - Relevant Social History: {relevant_social_history}
-        - Physical Examination Findings: {physical_examination_findings}
-        - Any relevant Laboratory or Imaging results: {lab_or_imaging_results}
-        
-        Generate Differential Diagnosis:
+
+        if ddx_strategy == "Provide Clinical Data":    
+            st.title("Differential Diagnosis Generator")
+            st.write("Add as many details as possible to improve the response. The prompts do not request any unique details; however, *modify values and do not include dates to ensure privacy.")
+
+            age = st.slider("Age", 0, 120, 50)
+            sex_at_birth = st.radio("Sex at Birth", options=["Female", "Male", "Other"], horizontal=True)
+            presenting_symptoms = st.text_input("Presenting Symptoms")
+            duration_of_symptoms = st.text_input("Duration of Symptoms")
+            past_medical_history = st.text_input("Past Medical History")
+            current_medications = st.text_input("Current Medications")
+            relevant_social_history = st.text_input("Relevant Social History")
+            physical_examination_findings = st.text_input("Physical Examination Findings")
+            lab_or_imaging_results = st.text_input("Any relevant Laboratory or Imaging results")
+            ddx_prompt = f"""
+            Patient Information:
+            - Age: {age}
+            - Sex: {sex_at_birth}
+            - Presenting Symptoms: {presenting_symptoms}
+            - Duration of Symptoms: {duration_of_symptoms}
+            - Past Medical History: {past_medical_history}
+            - Current Medications: {current_medications}
+            - Relevant Social History: {relevant_social_history}
+            - Physical Examination Findings: {physical_examination_findings}
+            - Any relevant Laboratory or Imaging results: {lab_or_imaging_results}
+            """
+            
+            ddx_prefix = """You apply the knowledge and wisdom of an expert diagnostician to generate a differential diagnosis 
+        based on the patient context provided. The differential diagnosis is double checked to ensure that it is organized by probability and includes the most applicable diagnoses from each probability category. """
+
+            ddx_sample_question = """Patient Information:
+        - Age: 54
+        - Sex: Male
+        - Presenting Symptoms: Persistent dry cough, weight loss, fatigue
+        - Duration of Symptoms: 3 months
+        - Past Medical History: Smoker for 30 years
+        - Current Medications: Lisinopril for hypertension
+        - Relevant Social History: Works in construction
+        - Physical Examination Findings: Decreased breath sounds on right side of chest
+        - Any relevant Laboratory or Imaging results: Chest X-ray shows mass in right lung
         """
-        
-        ddx_prefix = """You have the knowledge and wisdom of an expert diagnostician. You are able to generate a differential diagnosis 
-        based on the patient information provided. You are able to generate a differential diagnosis for new cases that is at least as good as the sample case provided:"""
-
-        ddx_sample_question = """Patient Information:
-    - Age: 54
-    - Sex: Male
-    - Presenting Symptoms: Persistent dry cough, weight loss, fatigue
-    - Duration of Symptoms: 3 months
-    - Past Medical History: Smoker for 30 years
-    - Current Medications: Lisinopril for hypertension
-    - Relevant Social History: Works in construction
-    - Physical Examination Findings: Decreased breath sounds on right side of chest
-    - Any relevant Laboratory or Imaging results: Chest X-ray shows mass in right lung
-
-    Generate Differential Diagnosis:
-    """
-        ddx_sample_answer = """Here is a list of possible diagnoses:
-        
-    *High Probability:*
-
-    🌟 1. **Lung Cancer:** Given the patient's long history of smoking and the presence of a mass in the lung, lung cancer is a significant concern.
-
-
-    *Moderate Probability:*
-    1. **Chronic Obstructive Pulmonary Disease (COPD):** The patient's history of smoking also makes COPD a potential diagnosis, but this wouldn't typically cause a mass on the chest X-ray.
-    2. **Tuberculosis (TB):** If the patient has been exposed to TB, this could explain his symptoms and the mass, particularly if the mass is a result of a Ghon complex or calcified granuloma.
-    3. **Pneumonia:** Although less likely given the duration of symptoms and presence of a mass, a complicated pneumonia could potentially appear as a mass on a chest X-ray.
-    4. **Pulmonary Abscess:** Similar to pneumonia, an abscess could potentially appear as a mass, though this is less likely without other signs of acute infection.
-    5. **Fungal Infection:** Certain fungal infections, such as histoplasmosis or aspergillosis, can mimic cancer on imaging and cause chronic respiratory symptoms, particularly in certain geographic areas or with certain exposures.
-
-
-    *Lower Probability:*
-    1. **Sarcoidosis:** This is less common, but can cause similar symptoms and imaging findings.
-    2. **Lung Adenoma or Pulmonary Hamartoma:** These benign tumors could theoretically cause a mass, but are less likely and typically don't cause symptoms unless they're large.
-    3. **Silicosis:** Given the patient's occupational exposure, this could be a consideration, but typically causes a more diffuse process rather than a single mass.
-    """
-        if st.button("Generate Differential Diagnosis"):
-            # Your differential diagnosis generation code goes here
-            ddx_output_text = answer_using_prefix(ddx_prefix, ddx_sample_question, ddx_sample_answer, ddx_prompt, temperature=0.0, history_context='')
-            # st.write("Differential Diagnosis will appear here...")
+            ddx_sample_answer = """Here is a list of possible diagnoses:
             
-            ddx_download_str = []
-            
-            # ENTITY_MEMORY_CONVERSATION_TEMPLATE
-            # Display the conversation history using an expander, and allow the user to download it
+        *High Probability:*
 
-            # ENTITY_MEMORY_CONVERSATION_TEMPLATE
-            # Display the conversation history using an expander, and allow the user to download it
-            with st.expander("Differential Diagnosis Draft", expanded=True):
-                st.info(f'Topic: {ddx_prompt}',icon="🧐")
-                st.success(f'Educational Use Only: **NOT REVIEWED FOR CLINICAL CARE** \n\n {ddx_output_text["choices"][0]["message"]["content"]}', icon="🤖")
-                ddx_download_str.append(ddx_prompt)
-                ddx_download_str.append(f'Draft Patient Education Materials: {ddx_output_text["choices"][0]["message"]["content"]}')
+        🌟 1. **Lung Cancer:** Given the patient's long history of smoking and the presence of a mass in the lung, lung cancer is a significant concern.
+
+
+        *Moderate Probability:*
+        1. **Chronic Obstructive Pulmonary Disease (COPD):** The patient's history of smoking also makes COPD a potential diagnosis, but this wouldn't typically cause a mass on the chest X-ray.
+        2. **Tuberculosis (TB):** If the patient has been exposed to TB, this could explain his symptoms and the mass, particularly if the mass is a result of a Ghon complex or calcified granuloma.
+        3. **Pneumonia:** Although less likely given the duration of symptoms and presence of a mass, a complicated pneumonia could potentially appear as a mass on a chest X-ray.
+        4. **Pulmonary Abscess:** Similar to pneumonia, an abscess could potentially appear as a mass, though this is less likely without other signs of acute infection.
+        5. **Fungal Infection:** Certain fungal infections, such as histoplasmosis or aspergillosis, can mimic cancer on imaging and cause chronic respiratory symptoms, particularly in certain geographic areas or with certain exposures.
+
+
+        *Lower Probability:*
+        1. **Sarcoidosis:** This is less common, but can cause similar symptoms and imaging findings.
+        2. **Lung Adenoma or Pulmonary Hamartoma:** These benign tumors could theoretically cause a mass, but are less likely and typically don't cause symptoms unless they're large.
+        3. **Silicosis:** Given the patient's occupational exposure, this could be a consideration, but typically causes a more diffuse process rather than a single mass.
+        """
+            if st.button("Generate Differential Diagnosis"):
+                # Your differential diagnosis generation code goes here
+                ddx_output_text = answer_using_prefix(ddx_prefix, ddx_sample_question, ddx_sample_answer, ddx_prompt, temperature=0.0, history_context='')
+                # st.write("Differential Diagnosis will appear here...")
                 
-                # Can throw error - requires fix
-                ddx_download_str = '\n'.join(ddx_download_str)
-                if ddx_download_str:
-                    st.download_button('Download',ddx_download_str)
+                ddx_download_str = []
+                
+                # ENTITY_MEMORY_CONVERSATION_TEMPLATE
+                # Display the conversation history using an expander, and allow the user to download it
+
+                # ENTITY_MEMORY_CONVERSATION_TEMPLATE
+                # Display the conversation history using an expander, and allow the user to download it
+                with st.expander("Differential Diagnosis Draft", expanded=True):
+                    st.info(f'Topic: {ddx_prompt}',icon="🧐")
+                    st.success(f'Educational Use Only: **NOT REVIEWED FOR CLINICAL CARE** \n\n {ddx_output_text["choices"][0]["message"]["content"]}', icon="🤖")
+                    ddx_download_str.append(ddx_prompt)
+                    ddx_download_str.append(f'Draft Patient Education Materials: {ddx_output_text["choices"][0]["message"]["content"]}')
+                    
+                    # Can throw error - requires fix
+                    ddx_download_str = '\n'.join(ddx_download_str)
+                    if ddx_download_str:
+                        st.download_button('Download',ddx_download_str)
+        
+        if ddx_strategy == "Find Alternative Diagnoses to Consider":
+            st.title("Alternative Diagnosis Generator")
+            st.write("Avoid premature closure and consider alternative diagnoses*")
+            alt_dx_prompt = st.text_input("Enter your presumed diagnosis.")
+            alt_dx_prefix = """Leverage the combined experience of expert diagnosticians to display a list of alternative diagnoses to consider when given a presumed diagnosis."""
+            alt_dx_sample_question = "Constrictive pericarditis"
+            alt_dx_sample_answer = """Constrictive pericarditis is a relatively rare condition that can be challenging to diagnose, given that its symptoms can be similar to those of several other cardiovascular and systemic disorders. The following is a list of some alternative diagnoses a clinician might consider if initially suspecting constrictive pericarditis:
+
+    1. Restrictive Cardiomyopathy: Similar to constrictive pericarditis, restrictive cardiomyopathy can cause reduced filling of the ventricles and can result in similar signs and symptoms.
+
+    2. Right Heart Failure: The symptoms of right heart failure such as peripheral edema, ascites, and jugular venous distention can mimic constrictive pericarditis.
+
+    3. Tricuspid Regurgitation: The backflow of blood into the right atrium due to valve dysfunction can cause symptoms that overlap with those of constrictive pericarditis.
+
+    4. Pericardial Effusion or Tamponade: Fluid accumulation in the pericardial sac can also mimic the symptoms of constrictive pericarditis.
+
+    5. Hepatic Cirrhosis: This can cause ascites and peripheral edema, symptoms that can resemble those of constrictive pericarditis.
+
+    6. Nephrotic Syndrome: Characterized by heavy proteinuria, hypoalbuminemia, and edema, nephrotic syndrome can cause systemic symptoms that may be mistaken for constrictive pericarditis.
+
+    7. Chronic Obstructive Pulmonary Disease (COPD) or Cor Pulmonale: These conditions can cause right-sided heart symptoms that can resemble those of constrictive pericarditis.
+
+    8. Pulmonary Hypertension: This condition increases pressure on the right side of the heart and can mimic symptoms of constrictive pericarditis.
+
+    9. Superior Vena Cava (SVC) Syndrome: This condition, often caused by a malignancy or thrombosis in the SVC, can present with symptoms similar to constrictive pericarditis.
+
+    10. Constrictive Bronchiolitis: Although primarily a pulmonary condition, severe cases can affect the cardiovascular system and mimic constrictive pericarditis.
+
+    These are just a few of the conditions that could be considered in a differential diagnosis when constrictive pericarditis is suspected. As with any diagnostic process, a thorough patient history, physical examination, and appropriate investigations are key to reaching an accurate diagnosis."""
+
+            if st.button("Generate Alternative Diagnoses"):
+                alt_dx_output_text = answer_using_prefix(alt_dx_prefix, alt_dx_sample_question, alt_dx_sample_answer, alt_dx_prompt, temperature=0.0, history_context='')
+                alt_dx_download_str = []
+                with st.expander("Alternative Diagnoses Draft", expanded=True):
+                    st.info(f'Topic: {alt_dx_prompt}',icon="🧐")
+                    st.success(f'Educational Use Only: **NOT REVIEWED FOR CLINICAL CARE** \n\n {alt_dx_output_text["choices"][0]["message"]["content"]}', icon="🤖")
+                    alt_dx_download_str.append(alt_dx_prompt)
+                    alt_dx_download_str.append(f'Draft Alternative Diagnoses: {alt_dx_output_text["choices"][0]["message"]["content"]}')
+                    
+                    # Can throw error - requires fix
+                    alt_dx_download_str = '\n'.join(alt_dx_download_str)
+                    if alt_dx_download_str:
+                        st.download_button('Download',alt_dx_download_str)
+        
+    
                     
     with tab8:
         st.title("Symptom Side Effect Assessment")
