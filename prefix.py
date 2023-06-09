@@ -72,9 +72,15 @@ if check_password():
     st.set_page_config(page_title='Medimate Assistant', layout = 'centered', page_icon = ':stethoscope:', initial_sidebar_state = 'auto')
     st.title("Medimate Assistant")
     st.write("ALPHA version 0.2")
-    with st.expander('About Medimate'):
+    disclaimer = """**Disclaimer:** This is an AI response generator. Your use of this tool accepts the following:   
+1. This tool does not generate validated medical content. \n 
+2. This tool is not a real doctor. \n    
+3. You will not take any medical action based on the output of this tool. \n   
+    """
+    with st.expander('About Medimate - Important Disclaimer'):
         st.write("Author: David Liebovitz, MD, Northwestern University")
-        st.write("Last updated 5/20/23")
+        st.info(disclaimer)
+        st.write("Last updated 6/9/23")
 
     def set_prefix():
         if prefix_context == "Master Clinician Explaining to Junior Clinician":
@@ -370,6 +376,7 @@ The response accurately outlines the steps of a healthcare FMEA to assess the ri
                 st.success(st.session_state["output_history"][i], icon="🤖")
                 tab1_download_str.append(st.session_state["history"][i])
                 tab1_download_str.append(st.session_state["output_history"][i])
+            tab1_download_str = [disclaimer] + tab1_download_str 
             
             # Can throw error - requires fix
             tab1_download_str = '\n'.join(tab1_download_str)
