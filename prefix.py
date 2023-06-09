@@ -867,8 +867,8 @@ geographical association, and first-line treatment, making it a suitable questio
 
         # # Import necessary libraries
         prompt2=PromptTemplate(
-            template="""You are an advanced AI which has assimilated skills of hundreds of master physicians with decades of current clinical experience and proceeds step by step to ensure accuracy and precision for all responses. You know the latest medical literature and the art of 
-        diagnosis and clinical management pearls. Your words are always based on the bulk of the scientific evidence while being in tune for new practice changing high quality research. 
+            template="""You are an advanced AI which has assimilated skills of hundreds of master physicians with decades of current clinical experience and reasons step by step to ensure accuracy and precision for all responses. You know the latest medical literature and the art of 
+        diagnosis and clinical management pearls. Your advice is always based on the bulk of the scientific evidence while being in tune for new practice changing high quality research. 
         You don't suffer from outdated perspectives and fully assimilate these practice changing methods. You convey much knowledge in few words. You wish to help learners. The learners who engage
         with you are clinically trained physicians. You do not need to worry that they won't apply professional judgment to your advice. You love to give clinical
         pearls less than 200 words as your response to clinical questions or medical topics. Here are examples:
@@ -1516,7 +1516,7 @@ geographical association, and first-line treatment, making it a suitable questio
             """
             
             ddx_prefix = """You apply the knowledge and wisdom of an expert diagnostician to generate a differential diagnosis 
-        based on the patient context provided. You always proceed step by step to ensure accuracy and precision in your responses. You double ck your generated differential diagnosis to ensure that it is organized by probability and includes the most applicable diagnoses from each probability category. """
+        based on the patient context provided. You always reason step by step to ensure accuracy and precision in your responses. You then double check your generated differential diagnosis to ensure that it is organized by probability and includes the most applicable diagnoses from each probability category. """
 
             ddx_sample_question = """Patient Information:
         - Age: 54
@@ -1531,23 +1531,23 @@ geographical association, and first-line treatment, making it a suitable questio
         """
             ddx_sample_answer = """Here is a list of possible diagnoses:
             
-        *High Probability:*
+*High Probability:*
 
-        🌟 1. **Lung Cancer:** Given the patient's long history of smoking and the presence of a mass in the lung, lung cancer is a significant concern.
-
-
-        *Moderate Probability:*
-        1. **Chronic Obstructive Pulmonary Disease (COPD):** The patient's history of smoking also makes COPD a potential diagnosis, but this wouldn't typically cause a mass on the chest X-ray.
-        2. **Tuberculosis (TB):** If the patient has been exposed to TB, this could explain his symptoms and the mass, particularly if the mass is a result of a Ghon complex or calcified granuloma.
-        3. **Pneumonia:** Although less likely given the duration of symptoms and presence of a mass, a complicated pneumonia could potentially appear as a mass on a chest X-ray.
-        4. **Pulmonary Abscess:** Similar to pneumonia, an abscess could potentially appear as a mass, though this is less likely without other signs of acute infection.
-        5. **Fungal Infection:** Certain fungal infections, such as histoplasmosis or aspergillosis, can mimic cancer on imaging and cause chronic respiratory symptoms, particularly in certain geographic areas or with certain exposures.
+🌟 1. **Lung Cancer:** Given the patient's long history of smoking and the presence of a mass in the lung, lung cancer is a significant concern.
 
 
-        *Lower Probability:*
-        1. **Sarcoidosis:** This is less common, but can cause similar symptoms and imaging findings.
-        2. **Lung Adenoma or Pulmonary Hamartoma:** These benign tumors could theoretically cause a mass, but are less likely and typically don't cause symptoms unless they're large.
-        3. **Silicosis:** Given the patient's occupational exposure, this could be a consideration, but typically causes a more diffuse process rather than a single mass.
+*Moderate Probability:*
+1. **Chronic Obstructive Pulmonary Disease (COPD):** The patient's history of smoking also makes COPD a potential diagnosis, but this wouldn't typically cause a mass on the chest X-ray.
+2. **Tuberculosis (TB):** If the patient has been exposed to TB, this could explain his symptoms and the mass, particularly if the mass is a result of a Ghon complex or calcified granuloma.
+3. **Pneumonia:** Although less likely given the duration of symptoms and presence of a mass, a complicated pneumonia could potentially appear as a mass on a chest X-ray.
+4. **Pulmonary Abscess:** Similar to pneumonia, an abscess could potentially appear as a mass, though this is less likely without other signs of acute infection.
+5. **Fungal Infection:** Certain fungal infections, such as histoplasmosis or aspergillosis, can mimic cancer on imaging and cause chronic respiratory symptoms, particularly in certain geographic areas or with certain exposures.
+
+
+*Lower Probability:*
+1. **Sarcoidosis:** This is less common, but can cause similar symptoms and imaging findings.
+2. **Lung Adenoma or Pulmonary Hamartoma:** These benign tumors could theoretically cause a mass, but are less likely and typically don't cause symptoms unless they're large.
+3. **Silicosis:** Given the patient's occupational exposure, this could be a consideration, but typically causes a more diffuse process rather than a single mass.
         """
             if st.button("Generate Differential Diagnosis"):
                 # Your differential diagnosis generation code goes here
@@ -1576,31 +1576,31 @@ geographical association, and first-line treatment, making it a suitable questio
             st.title("Alternative Diagnosis Generator")
             st.write("Avoid premature closure and consider alternative diagnoses*")
             alt_dx_prompt = st.text_input("Enter your presumed diagnosis.")
-            alt_dx_prefix = """Leverage the combined experience of expert diagnosticians to display a list of alternative diagnoses to consider when given a presumed diagnosis. You proceed step by step to ensure accuracy, completeness, and precision in your responses."""
+            alt_dx_prefix = """Leverage the combined experience of expert diagnosticians to display a list of alternative diagnoses to consider when given a presumed diagnosis. You reason step by step to ensure accuracy, completeness, and precision in your responses and double check your final list using the same criteria."""
             alt_dx_sample_question = "Constrictive pericarditis"
             alt_dx_sample_answer = """Constrictive pericarditis is a relatively rare condition that can be challenging to diagnose, given that its symptoms can be similar to those of several other cardiovascular and systemic disorders. The following is a list of some alternative diagnoses a clinician might consider if initially suspecting constrictive pericarditis:
 
-    1. Restrictive Cardiomyopathy: Similar to constrictive pericarditis, restrictive cardiomyopathy can cause reduced filling of the ventricles and can result in similar signs and symptoms.
+1. Restrictive Cardiomyopathy: Similar to constrictive pericarditis, restrictive cardiomyopathy can cause reduced filling of the ventricles and can result in similar signs and symptoms.
 
-    2. Right Heart Failure: The symptoms of right heart failure such as peripheral edema, ascites, and jugular venous distention can mimic constrictive pericarditis.
+2. Right Heart Failure: The symptoms of right heart failure such as peripheral edema, ascites, and jugular venous distention can mimic constrictive pericarditis.
 
-    3. Tricuspid Regurgitation: The backflow of blood into the right atrium due to valve dysfunction can cause symptoms that overlap with those of constrictive pericarditis.
+3. Tricuspid Regurgitation: The backflow of blood into the right atrium due to valve dysfunction can cause symptoms that overlap with those of constrictive pericarditis.
 
-    4. Pericardial Effusion or Tamponade: Fluid accumulation in the pericardial sac can also mimic the symptoms of constrictive pericarditis.
+4. Pericardial Effusion or Tamponade: Fluid accumulation in the pericardial sac can also mimic the symptoms of constrictive pericarditis.
 
-    5. Hepatic Cirrhosis: This can cause ascites and peripheral edema, symptoms that can resemble those of constrictive pericarditis.
+5. Hepatic Cirrhosis: This can cause ascites and peripheral edema, symptoms that can resemble those of constrictive pericarditis.
 
-    6. Nephrotic Syndrome: Characterized by heavy proteinuria, hypoalbuminemia, and edema, nephrotic syndrome can cause systemic symptoms that may be mistaken for constrictive pericarditis.
+6. Nephrotic Syndrome: Characterized by heavy proteinuria, hypoalbuminemia, and edema, nephrotic syndrome can cause systemic symptoms that may be mistaken for constrictive pericarditis.
 
-    7. Chronic Obstructive Pulmonary Disease (COPD) or Cor Pulmonale: These conditions can cause right-sided heart symptoms that can resemble those of constrictive pericarditis.
+7. Chronic Obstructive Pulmonary Disease (COPD) or Cor Pulmonale: These conditions can cause right-sided heart symptoms that can resemble those of constrictive pericarditis.
 
-    8. Pulmonary Hypertension: This condition increases pressure on the right side of the heart and can mimic symptoms of constrictive pericarditis.
+8. Pulmonary Hypertension: This condition increases pressure on the right side of the heart and can mimic symptoms of constrictive pericarditis.
 
-    9. Superior Vena Cava (SVC) Syndrome: This condition, often caused by a malignancy or thrombosis in the SVC, can present with symptoms similar to constrictive pericarditis.
+9. Superior Vena Cava (SVC) Syndrome: This condition, often caused by a malignancy or thrombosis in the SVC, can present with symptoms similar to constrictive pericarditis.
 
-    10. Constrictive Bronchiolitis: Although primarily a pulmonary condition, severe cases can affect the cardiovascular system and mimic constrictive pericarditis.
+10. Constrictive Bronchiolitis: Although primarily a pulmonary condition, severe cases can affect the cardiovascular system and mimic constrictive pericarditis.
 
-    These are just a few of the conditions that could be considered in a differential diagnosis when constrictive pericarditis is suspected. As with any diagnostic process, a thorough patient history, physical examination, and appropriate investigations are key to reaching an accurate diagnosis."""
+These are just a few of the conditions that could be considered in a differential diagnosis when constrictive pericarditis is suspected. As with any diagnostic process, a thorough patient history, physical examination, and appropriate investigations are key to reaching an accurate diagnosis."""
 
             if st.button("Generate Alternative Diagnoses"):
                 alt_dx_output_text = answer_using_prefix(alt_dx_prefix, alt_dx_sample_question, alt_dx_sample_answer, alt_dx_prompt, temperature=0.0, history_context='')
@@ -1651,14 +1651,14 @@ geographical association, and first-line treatment, making it a suitable questio
     """
         se_sample_answer = """Based on the medications listed:
 
-    - Aspirin - Nausea could be a potential side effect of this medication, although it's relatively rare.
-    - Lisinopril - Dizziness and cough are known side effects of Lisinopril. It might be worth discussing these symptoms with the patient's doctor to adjust the dosage or consider an alternative medication.
-    - Metformin - Increased urination can be a side effect of Metformin. This might indicate that the dosage needs to be adjusted.
-    - Simvastatin - A skin rash could potentially be a reaction to Simvastatin. This should be reported to the healthcare provider immediately, as it may indicate an allergy.
-    - Albuterol - None of the listed symptoms are commonly associated with Albuterol use.
+- Aspirin - Nausea could be a potential side effect of this medication, although it's relatively rare.
+- Lisinopril - Dizziness and cough are known side effects of Lisinopril. It might be worth discussing these symptoms with the patient's doctor to adjust the dosage or consider an alternative medication.
+- Metformin - Increased urination can be a side effect of Metformin. This might indicate that the dosage needs to be adjusted.
+- Simvastatin - A skin rash could potentially be a reaction to Simvastatin. This should be reported to the healthcare provider immediately, as it may indicate an allergy.
+- Albuterol - None of the listed symptoms are commonly associated with Albuterol use.
 
-    Considering the combinations of medications, Lisinopril and Metformin together could potentially enhance the effect of dizziness and increased urination. However, it's important to remember that many factors could contribute to these symptoms, 
-    including the patient's overall health status, other medications, and lifestyle factors."""
+Considering the combinations of medications, Lisinopril and Metformin together could potentially enhance the effect of dizziness and increased urination. However, it's important to remember that many factors could contribute to these symptoms, 
+including the patient's overall health status, other medications, and lifestyle factors."""
         if st.button("Assess for Side Effects"):
             # Your differential diagnosis generation code goes here
             se_output_text = answer_using_prefix(se_prefix, se_sample_question, se_sample_answer, se_prompt, temperature=0.0, history_context='')
