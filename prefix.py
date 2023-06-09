@@ -78,7 +78,7 @@ if check_password():
 
     def set_prefix():
         if prefix_context == "Master Clinician Explaining to Junior Clinician":
-            prefix = """You are receiving a question from a medical professional. Respond as a master clinician explaining step by step to a junior clinician who is not quite at your level yet. 
+            prefix = """You are receiving a question from a medical professional. Respond as a master clinician reasoning step by step to a junior clinician who is not quite at your level yet. 
                     Ensure you apply the latest available evidence-based guidelines 
                     and high-impact and up to date medical literature when answering the question. Critical step: Perform a 
                     final step by step review of your preliminary response to ensure it is factual and complete. Then 
@@ -86,23 +86,23 @@ if check_password():
             sample_question = "What is the best treatment for a patient with a blood clot in their leg?"
             sample_answer = """Certainly, I'd be happy to help clarify this for you. The condition you're referring to is called deep vein thrombosis (DVT), which involves a blood clot in the deep veins, most often in the leg.
 
-        Let's go through the standard treatment steps:
+Let's go through the standard treatment steps:
 
-        1. **Anticoagulation therapy:** The primary treatment for DVT is anticoagulation, or blood-thinning medication. This prevents the clot from growing and prevents new clots from forming. Initial treatment is typically with low molecular weight heparin (LMWH), fondaparinux, or direct oral anticoagulants (DOACs) like rivaroxaban, apixaban, edoxaban, or dabigatran. The choice of anticoagulant may depend on patient characteristics, such as renal function, risk of bleeding, and patient preference.
+1. **Anticoagulation therapy:** The primary treatment for DVT is anticoagulation, or blood-thinning medication. This prevents the clot from growing and prevents new clots from forming. Initial treatment is typically with low molecular weight heparin (LMWH), fondaparinux, or direct oral anticoagulants (DOACs) like rivaroxaban, apixaban, edoxaban, or dabigatran. The choice of anticoagulant may depend on patient characteristics, such as renal function, risk of bleeding, and patient preference.
 
-        2. **Duration of therapy:** The recommended duration of anticoagulation depends on the circumstances. For a provoked DVT (one that occurred due to a temporary risk factor like surgery), 3 months is usually sufficient. For unprovoked DVT or ongoing risk factors, longer treatment is usually recommended. This decision should be made based on the balance of the patient's risk of recurrence if anticoagulation is stopped, and the risk of bleeding if it is continued.
+2. **Duration of therapy:** The recommended duration of anticoagulation depends on the circumstances. For a provoked DVT (one that occurred due to a temporary risk factor like surgery), 3 months is usually sufficient. For unprovoked DVT or ongoing risk factors, longer treatment is usually recommended. This decision should be made based on the balance of the patient's risk of recurrence if anticoagulation is stopped, and the risk of bleeding if it is continued.
 
-        3. **Compression stockings:** While not universally agreed upon, some guidelines suggest the use of graduated compression stockings to reduce the risk of post-thrombotic syndrome, which involves long-term swelling and pain in the leg where the DVT was.
+3. **Compression stockings:** While not universally agreed upon, some guidelines suggest the use of graduated compression stockings to reduce the risk of post-thrombotic syndrome, which involves long-term swelling and pain in the leg where the DVT was.
 
-        4. **Follow-up care:** Patients should be regularly monitored for the effectiveness of treatment, side effects of anticoagulation, and signs of post-thrombotic syndrome. 
+4. **Follow-up care:** Patients should be regularly monitored for the effectiveness of treatment, side effects of anticoagulation, and signs of post-thrombotic syndrome. 
 
-        5. **Inferior vena cava (IVC) filters:** These are used in patients who can't take anticoagulation or in those in whom it has failed. However, they do not treat the clot and have their own complications, so they're generally used as a last resort.
+5. **Inferior vena cava (IVC) filters:** These are used in patients who can't take anticoagulation or in those in whom it has failed. However, they do not treat the clot and have their own complications, so they're generally used as a last resort.
 
-        6. **Thrombolysis or thrombectomy:** In severe cases (such as in phlegmasia cerulea dolens), these procedures to directly remove or dissolve the clot might be considered. However, they are associated with a higher risk of bleeding and are therefore not typically first-line treatments.
+6. **Thrombolysis or thrombectomy:** In severe cases (such as in phlegmasia cerulea dolens), these procedures to directly remove or dissolve the clot might be considered. However, they are associated with a higher risk of bleeding and are therefore not typically first-line treatments.
 
-        **Review of Response:**
+**Review of Response:**
 
-        This response accurately describes the step-by-step process for treating a patient with a blood clot in their leg, or DVT. It covers the primary treatment method of anticoagulation, with a description of the different types of anticoagulants and factors that might influence their selection. The description of the duration of therapy is accurate, reflecting the differing needs of patients based on their risk factors. The potential use of compression stockings, follow-up care, IVC filters, and thrombolysis or thrombectomy are also correctly described. The response is in line with current evidence-based guidelines and high-impact medical literature.
+This response accurately describes the step-by-step process for treating a patient with a blood clot in their leg, or DVT. It covers the primary treatment method of anticoagulation, with a description of the different types of anticoagulants and factors that might influence their selection. The description of the duration of therapy is accurate, reflecting the differing needs of patients based on their risk factors. The potential use of compression stockings, follow-up care, IVC filters, and thrombolysis or thrombectomy are also correctly described. The response is in line with current evidence-based guidelines and high-impact medical literature.
         """
             temperature = 0.0
         elif prefix_context == "Senior Researcher Explaining to Junior Researcher":
@@ -1134,7 +1134,7 @@ geographical association, and first-line treatment, making it a suitable questio
         
         
         # st.sidebar.title("Settings and Preliminary Outputs")
-        num_eval_questions =st.number_input("Specify how many questions you'd like to generate:", min_value=1, max_value=50, value=10, step=1)
+        num_eval_questions =st.number_input("Specify how many questions you'd like to generate (then press enter on your keyboard):", min_value=1, max_value=50, value=10, step=1)
         
         embedding_option = "OpenAI Embeddings"
 
@@ -1231,7 +1231,7 @@ geographical association, and first-line treatment, making it a suitable questio
             user_question = st.text_input("Please enter your own question about the PDF(s):")
             
             if user_question:
-                index_context = "Use only the reference document for knowledge. If the content is not covered in the document, please indicate the document does not address that topic. " + user_question
+                index_context = 'Use only the reference document for knowledge. If the content is not covered in the document, please indicate the document does not address that topic. If an answer to the question is provided, it must be annotated with a citation. Use the following format to cite relevant passages' + '\n' + '(**Citation**: …).' + '\n' + 'Question: ' + user_question
                 answer = fn_qa_run(_qa, index_context)
                 st.session_state.pdf_user_question.append(user_question)  
                 st.session_state.pdf_user_answer.append(answer)  
