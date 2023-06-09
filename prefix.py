@@ -1012,6 +1012,7 @@ geographical association, and first-line treatment, making it a suitable questio
                 st.success(st.session_state["generated"][i], icon="🤖")
                 download_str.append(st.session_state["past"][i])
                 download_str.append(st.session_state["generated"][i])
+            download_str = [disclaimer] + download_str
             
             # Can throw error - requires fix
             download_str = '\n'.join(download_str)
@@ -1250,6 +1251,7 @@ geographical association, and first-line treatment, making it a suitable questio
                     st.success(st.session_state["pdf_user_answer"][i], icon="🤖")
                     download_str.append(st.session_state["pdf_user_question"][i])
                     download_str.append(st.session_state["pdf_user_answer"][i])
+                download_str = [disclaimer] + download_str
             
                 # Can throw error - requires fix
                 download_str = '\n'.join(download_str)
@@ -1353,6 +1355,7 @@ geographical association, and first-line treatment, making it a suitable questio
                 st.success(f'Draft Patient Education Materials: **REVIEW CAREFULLY FOR ERRORS** \n\n {pt_ed_output_text["choices"][0]["message"]["content"]}', icon="🤖")
                 pt_ed_download_str.append(my_ask_for_pt_ed)
                 pt_ed_download_str.append(f'Draft Patient Education Materials: {pt_ed_output_text["choices"][0]["message"]["content"]}')
+                pt_ed_download_str = [disclaimer] + pt_ed_download_str
                 
                 # Can throw error - requires fix
                 pt_ed_download_str = '\n'.join(pt_ed_download_str)
@@ -1486,6 +1489,7 @@ geographical association, and first-line treatment, making it a suitable questio
                 st.success(f'Your custom PubMed URL: \n\n {pubmed_output_text["choices"][0]["message"]["content"]}', icon="🤖")
                 pubmed_download_str.append(my_ask_for_pubmed)
                 pubmed_download_str.append(f'Draft Patient Education Materials: {pubmed_output_text["choices"][0]["message"]["content"]}')
+                pubmed_download_str = [disclaimer] + pubmed_download_str
                 
                 # Can throw error - requires fix
                 pubmed_download_str = '\n'.join(pubmed_download_str)
@@ -1573,6 +1577,7 @@ geographical association, and first-line treatment, making it a suitable questio
                     st.success(f'Educational Use Only: **NOT REVIEWED FOR CLINICAL CARE** \n\n {ddx_output_text["choices"][0]["message"]["content"]}', icon="🤖")
                     ddx_download_str.append(ddx_prompt)
                     ddx_download_str.append(f'Draft Patient Education Materials: {ddx_output_text["choices"][0]["message"]["content"]}')
+                    ddx_download_str = [disclaimer] + ddx_download_str
                     
                     # Can throw error - requires fix
                     ddx_download_str = '\n'.join(ddx_download_str)
@@ -1617,6 +1622,7 @@ These are just a few of the conditions that could be considered in a differentia
                     st.success(f'Educational Use Only: **NOT REVIEWED FOR CLINICAL CARE** \n\n {alt_dx_output_text["choices"][0]["message"]["content"]}', icon="🤖")
                     alt_dx_download_str.append(alt_dx_prompt)
                     alt_dx_download_str.append(f'Draft Alternative Diagnoses: {alt_dx_output_text["choices"][0]["message"]["content"]}')
+                    alt_dx_download_str = [disclaimer] + alt_dx_download_str
                     
                     # Can throw error - requires fix
                     alt_dx_download_str = '\n'.join(alt_dx_download_str)
@@ -1683,6 +1689,7 @@ including the patient's overall health status, other medications, and lifestyle 
                 st.success(f'Educational Use Only: **NOT REVIEWED FOR CLINICAL CARE** \n\n {se_output_text["choices"][0]["message"]["content"]}', icon="🤖")
                 se_download_str.append(se_prompt)
                 se_download_str.append(f'Draft Patient Education Materials: {se_output_text["choices"][0]["message"]["content"]}')
+                se_download_str = [disclaimer] + se_download_str
                 
                 # Can throw error - requires fix
                 se_download_str = '\n'.join(se_download_str)
