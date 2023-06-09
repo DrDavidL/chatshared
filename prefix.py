@@ -72,7 +72,7 @@ if check_password():
     st.set_page_config(page_title='Medimate Assistant', layout = 'centered', page_icon = ':stethoscope:', initial_sidebar_state = 'auto')
     st.title("Medimate Assistant")
     st.write("ALPHA version 0.2")
-    disclaimer = """**Disclaimer:** This is an AI response generator. Your use of this tool accepts the following:   
+    disclaimer = """**Disclaimer:** This is a tool to assist education regarding artificial intelligence. Your use of this tool accepts the following:   
 1. This tool does not generate validated medical content. \n 
 2. This tool is not a real doctor. \n    
 3. You will not take any medical action based on the output of this tool. \n   
