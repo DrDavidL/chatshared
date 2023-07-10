@@ -998,7 +998,7 @@ geographical association, and first-line treatment, making it a suitable questio
         # Create an OpenAI instance
         
         openai.api_key = os.environ['OPENAI_API_KEY']
-        llm = OpenAI(temperature=0,
+        llm = ChatOpenAI(temperature=0,
                     openai_api_key=openai.api_key, 
                     model_name=MODEL, 
                     verbose=False) 
