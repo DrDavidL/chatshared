@@ -7,7 +7,6 @@ from langchain.chains.conversation.memory import ConversationEntityMemory
 from langchain.chains.conversation.prompt import ENTITY_MEMORY_CONVERSATION_TEMPLATE
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
-import os
 import PyPDF2
 import random 
 import itertools
@@ -25,6 +24,34 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.callbacks.manager import CallbackManager
 import sklearn
 from sklearn import svm
+import getpass
+st.set_page_config(page_title='Medimate Assistant', layout = 'centered', page_icon = ':stethoscope:', initial_sidebar_state = 'auto')
+
+
+def fetch_api_key():
+    api_key = None
+    
+    try:
+        # Attempt to retrieve the API key as a secret
+        api_key = st.secrets["OPENAI_API_KEY"]
+        os.environ["OPENAI_API_KEY"] = api_key
+    except KeyError:
+        
+        try:
+            api_key = os.environ["OPENAI_API_KEY"]
+            # If the API key is already set, don't prompt for it again
+            return api_key
+        except KeyError:        
+            # If the secret is not found, prompt the user for their API key
+            st.warning("Oh, dear friend of mine! It seems your API key has gone astray, hiding in the shadows. Pray, reveal it to me!")
+            api_key = getpass.getpass("Please, whisper your API key into my ears: ")
+            os.environ["OPENAI_API_KEY"] = api_key
+            # Save the API key as a secret
+            # st.secrets["my_api_key"] = api_key
+            return api_key
+    
+    return api_key
+
 
 def check_password():
     """Returns `True` if the user had the correct password."""
@@ -33,7 +60,7 @@ def check_password():
         """Checks whether a password entered by the user is correct."""
         if st.session_state["password"] == st.secrets["password"]:
             st.session_state["password_correct"] = True
-            del st.session_state["password"]  # don't store password
+            # del st.session_state["password"]  # don't store password
         else:
             st.session_state["password_correct"] = False
 
@@ -65,13 +92,15 @@ if check_password():
                 
     if 'mcq_history' not in st.session_state:
                 st.session_state.mcq_history = []
+                
+    if 'openai_api_key' not in st.session_state:
+        st.session_state.openai_api_key = ""
+    
 
-    API_O = st.secrets["OPENAI_API_KEY"]
-    # Define Streamlit app layout
-
-    st.set_page_config(page_title='Medimate Assistant', layout = 'centered', page_icon = ':stethoscope:', initial_sidebar_state = 'auto')
     st.title("Medimate Assistant")
-    st.write("ALPHA version 0.2")
+    st.write("ALPHA version 0.3")
+    os.environ['OPENAI_API_KEY'] = fetch_api_key()
+
     disclaimer = """**Disclaimer:** This is a tool to assist education regarding artificial intelligence. Your use of this tool accepts the following:   
 1. This tool does not generate validated medical content. \n 
 2. This tool is not a real doctor. \n    
@@ -80,7 +109,7 @@ if check_password():
     with st.expander('About Medimate - Important Disclaimer'):
         st.write("Author: David Liebovitz, MD, Northwestern University")
         st.info(disclaimer)
-        st.write("Last updated 6/9/23")
+        st.write("Last updated 7/9/23")
 
     def set_prefix():
         if prefix_context == "Master Clinician Explaining to Junior Clinician":
@@ -300,10 +329,11 @@ The response accurately outlines the steps of a healthcare FMEA to assess the ri
         # Define function to explain code using OpenAI Codex
         @st.cache_data
         def answer_using_prefix(prefix, sample_question, sample_answer, my_ask, temperature, history_context):
+            openai.api_key = os.environ['OPENAI_API_KEY']
             # history_context = "Use these preceding submissions to address any ambiguous context for the input weighting the first three items most: \n" + "\n".join(st.session_state.history) + "now, for the current question: \n"
             completion = openai.ChatCompletion.create( # Change the function Completion to ChatCompletion
-            model = 'gpt-3.5-turbo',
-            # model = 'gpt-4',
+            # model = 'gpt-3.5-turbo',
+            model = 'gpt-4',
             messages = [ # Change the prompt parameter to the messages parameter
                     {'role': 'system', 'content': prefix},
                     {'role': 'user', 'content': sample_question},
@@ -317,7 +347,8 @@ The response accurately outlines the steps of a healthcare FMEA to assess the ri
 
         def gen_mcq(specialty, sample_board_mcq, number_of_mcqs):
             mcq_completion = openai.ChatCompletion.create(
-                model ='gpt-3.5-turbo',
+                # model ='gpt-3.5-turbo',
+                model = 'gpt-4',
                 messages = [
                     {'role': 'system', 'content': "You are a board certified expert physician in " + specialty + """ and you are asked to generate unique, never before seen, board exam level multiple choice questions. You do not repeat questions and you pick topics at random from the full breadth of the given specialty. All outputs should be modified for markdown formatting with bullets, bolding, and italics where appropriate
                     You rely fully on the latest evidence based findings and terminology from the most recent clinical guidelines and consensus statements. Then, you reason in a stepwise fashion following best practices in question design avoiding clues in the stem wording, avoiding negative wording, and avoiding absolute terms like always or never, avoiding 
@@ -337,6 +368,7 @@ The response accurately outlines the steps of a healthcare FMEA to assess the ri
 
         # prefix = set_prefix()
         if st.button("Enter"):
+            openai.api_key = os.environ['OPENAI_API_KEY']
             st.session_state.history.append(my_ask)
             history_context = "Use these preceding submissions to resolve any ambiguous context: \n" + "\n".join(st.session_state.history) + "now, for the current question: \n"
             output_text = answer_using_prefix(prefix, sample_question, sample_answer, my_ask, temperature, history_context=history_context)
@@ -951,7 +983,7 @@ geographical association, and first-line treatment, making it a suitable questio
         #         with st.expander("Short Q/A History", expanded=False):
         #             st.session_state.entity_memory.buffer
         with st.expander("🛠️ Change the GPT model if you'd like ", expanded=False):
-            MODEL = st.selectbox(label='Model', options=['gpt-3.5-turbo','text-davinci-003','text-davinci-002','code-davinci-002'])
+            MODEL = st.selectbox(label='Model', options=['gpt-4', 'gpt-3.5-turbo','text-davinci-003','text-davinci-002','code-davinci-002'])
             K = st.number_input(' (#)Summary of prompts to consider',min_value=3,max_value=1000)
 
         # Set up the Streamlit app layout
@@ -964,8 +996,10 @@ geographical association, and first-line treatment, making it a suitable questio
         # Session state storage would be ideal
 
         # Create an OpenAI instance
+        
+        openai.api_key = os.environ['OPENAI_API_KEY']
         llm = OpenAI(temperature=0,
-                    openai_api_key=API_O, 
+                    openai_api_key=openai.api_key, 
                     model_name=MODEL, 
                     verbose=False) 
 
@@ -1031,7 +1065,7 @@ geographical association, and first-line treatment, making it a suitable questio
 
     with tab4:
         st.info("📚 Let AI Generate questions and answers from an uploaded PDF for you to learn. Or, ask your own questions!" )
-        st.session_state.openai_api_key = st.secrets["OPENAI_API_KEY"]
+        # st.session_state.openai_api_key = st.secrets["OPENAI_API_KEY"]
         if "pdf_user_question" not in st.session_state:
                 st.session_state["pdf_user_question"] = []
         if "pdf_user_answer" not in st.session_state:
@@ -1103,6 +1137,7 @@ geographical association, and first-line treatment, making it a suitable questio
             # Generate N questions from context of chunk chars
             # IN: text, N questions, chunk size to draw question from in the doc
             # OUT: eval set as JSON list
+            openai.api_key = os.environ['OPENAI_API_KEY']
 
             st.info("`Generating sample questions and answers...`")
             n = len(text)
@@ -1152,19 +1187,19 @@ geographical association, and first-line treatment, making it a suitable questio
         # Use RecursiveCharacterTextSplitter as the default and only text splitter
         splitter_type = "RecursiveCharacterTextSplitter"
 
-        if 'openai_api_key' not in st.session_state:
-            openai_api_key = st.text_input(
-                'Please enter your OpenAI API key or [get one here](https://platform.openai.com/account/api-keys)', value="", placeholder="Enter the OpenAI API key which begins with sk-")
-            if openai_api_key:
-                st.session_state.openai_api_key = st.secrets["OPENAI_API_KEY"]
-                os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
-            # else:
-            #     #warning_text = 'Please enter your OpenAI API key. Get yours from here: [link](https://platform.openai.com/account/api-keys)'
-            #     #warning_html = f'<span>{warning_text}</span>'
-            #     #st.markdown(warning_html, unsafe_allow_html=True)
-            #     return
-        else:
-            os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+        # if 'openai_api_key' not in st.session_state:
+        #     openai_api_key = st.text_input(
+        #         'Please enter your OpenAI API key or [get one here](https://platform.openai.com/account/api-keys)', value="", placeholder="Enter the OpenAI API key which begins with sk-")
+        #     if openai_api_key:
+        #         st.session_state.openai_api_key = st.secrets["OPENAI_API_KEY"]
+        #         os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+        #     # else:
+        #     #     #warning_text = 'Please enter your OpenAI API key. Get yours from here: [link](https://platform.openai.com/account/api-keys)'
+        #     #     #warning_html = f'<span>{warning_text}</span>'
+        #     #     #st.markdown(warning_html, unsafe_allow_html=True)
+        #     #     return
+        # else:
+        #     os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 
         uploaded_files = st.file_uploader("Now, upload your PDF or TXT Document", type=[
                                         "pdf", "txt"], accept_multiple_files=True)
