@@ -1236,7 +1236,7 @@ geographical association, and first-line treatment, making it a suitable questio
             callback_manager = CallbackManager([callback_handler])
 
             chat_openai = ChatOpenAI(
-                streaming=True, callback_manager=callback_manager, verbose=True, temperature=0)
+                streaming=True, callback_manager=callback_manager, verbose=True, temperature=0.4)
             
             
             _qa = RetrievalQA.from_chain_type(llm=chat_openai, retriever=retriever, chain_type="stuff", verbose=True)
