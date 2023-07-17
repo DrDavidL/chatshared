@@ -413,7 +413,7 @@ The response accurately outlines the steps of a healthcare FMEA to assess the ri
             # Can throw error - requires fix
             tab1_download_str = '\n'.join(tab1_download_str)
             if tab1_download_str:
-                st.download_button('Download',tab1_download_str)
+                st.download_button('Download',tab1_download_str, key = "Long_Answer_Conversation_Thread")
 
         # Display stored conversation sessions in the sidebar
         # for i, sublist in enumerate(st.session_state.stored_session):
@@ -1051,7 +1051,7 @@ geographical association, and first-line treatment, making it a suitable questio
             # Can throw error - requires fix
             download_str = '\n'.join(download_str)
             if download_str:
-                st.download_button('Download',download_str, key = download_str)
+                st.download_button('Download',download_str, key = "download_pearl")
 
         # Display stored conversation sessions in the sidebar
         for i, sublist in enumerate(st.session_state.stored_session):
@@ -1291,7 +1291,7 @@ geographical association, and first-line treatment, making it a suitable questio
                 # Can throw error - requires fix
                 download_str = '\n'.join(download_str)
                 if download_str:
-                    st.download_button('Download',download_str)
+                    st.download_button('Download',download_str, key = "pdf_questions")
 
 
 
@@ -1395,7 +1395,7 @@ geographical association, and first-line treatment, making it a suitable questio
                 # Can throw error - requires fix
                 pt_ed_download_str = '\n'.join(pt_ed_download_str)
                 if pt_ed_download_str:
-                    st.download_button('Download',pt_ed_download_str)
+                    st.download_button('Download',pt_ed_download_str, key = "pt_ed_questions")
 
     with tab6:
         # st.info("PICO format included!")
@@ -1529,7 +1529,7 @@ geographical association, and first-line treatment, making it a suitable questio
                 # Can throw error - requires fix
                 pubmed_download_str = '\n'.join(pubmed_download_str)
                 if pubmed_download_str:
-                    st.download_button('Download',pubmed_download_str)
+                    st.download_button('Download',pubmed_download_str, key = 'pubmed_questions')
                     
     with tab7:
         ddx_strategy = st.radio("Choose an approach for a differential diagnosis!", options=["Find Alternative Diagnoses to Consider","Provide Clinical Data"], index=0, key="ddx strategy")
@@ -1617,7 +1617,7 @@ geographical association, and first-line treatment, making it a suitable questio
                     # Can throw error - requires fix
                     ddx_download_str = '\n'.join(ddx_download_str)
                     if ddx_download_str:
-                        st.download_button('Download',ddx_download_str)
+                        st.download_button('Download',ddx_download_str, key = 'ddx_questions')
         
         if ddx_strategy == "Find Alternative Diagnoses to Consider":
             st.title("Alternative Diagnosis Generator")
@@ -1662,7 +1662,7 @@ These are just a few of the conditions that could be considered in a differentia
                     # Can throw error - requires fix
                     alt_dx_download_str = '\n'.join(alt_dx_download_str)
                     if alt_dx_download_str:
-                        st.download_button('Download',alt_dx_download_str)
+                        st.download_button('Download',alt_dx_download_str, key = 'alt_dx_questions')
         
     
                     
@@ -1729,4 +1729,4 @@ including the patient's overall health status, other medications, and lifestyle 
                 # Can throw error - requires fix
                 se_download_str = '\n'.join(se_download_str)
                 if se_download_str:
-                    st.download_button('Download',se_download_str)
+                    st.download_button('Download',se_download_str, key = 'meds_questions')
