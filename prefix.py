@@ -95,6 +95,9 @@ if check_password():
                 
     if 'openai_api_key' not in st.session_state:
         st.session_state.openai_api_key = ""
+        
+    if 'model' not in st.session_state:
+        st.session_state.model = "gpt-3.5-turbo"
     
 
     st.title("Medimate Assistant")
@@ -109,7 +112,8 @@ if check_password():
     with st.expander('About Medimate - Important Disclaimer'):
         st.write("Author: David Liebovitz, MD, Northwestern University")
         st.info(disclaimer)
-        st.write("Last updated 7/9/23")
+        st.session_state.model = st.radio("Select model - leave default for now", ("gpt-3.5-turbo", "gpt-3.5-turbo-16k", "gpt-4"), index=0)
+        st.write("Last updated 7/23/23")
 
     def set_prefix():
         if prefix_context == "Master Clinician Explaining to Junior Clinician":
@@ -333,7 +337,7 @@ The response accurately outlines the steps of a healthcare FMEA to assess the ri
             # history_context = "Use these preceding submissions to address any ambiguous context for the input weighting the first three items most: \n" + "\n".join(st.session_state.history) + "now, for the current question: \n"
             completion = openai.ChatCompletion.create( # Change the function Completion to ChatCompletion
             # model = 'gpt-3.5-turbo',
-            model = 'gpt-4',
+            model = st.session_state.model,
             messages = [ # Change the prompt parameter to the messages parameter
                     {'role': 'system', 'content': prefix},
                     {'role': 'user', 'content': sample_question},
@@ -348,7 +352,7 @@ The response accurately outlines the steps of a healthcare FMEA to assess the ri
         def gen_mcq(specialty, sample_board_mcq, number_of_mcqs):
             mcq_completion = openai.ChatCompletion.create(
                 # model ='gpt-3.5-turbo',
-                model = 'gpt-4',
+                model = st.session_state.model,
                 messages = [
                     {'role': 'system', 'content': "You are a board certified expert physician in " + specialty + """ and you are asked to generate unique, never before seen, board exam level multiple choice questions. You do not repeat questions and you pick topics at random from the full breadth of the given specialty. All outputs should be modified for markdown formatting with bullets, bolding, and italics where appropriate
                     You rely fully on the latest evidence based findings and terminology from the most recent clinical guidelines and consensus statements. Then, you reason in a stepwise fashion following best practices in question design avoiding clues in the stem wording, avoiding negative wording, and avoiding absolute terms like always or never, avoiding 
@@ -982,9 +986,9 @@ geographical association, and first-line treatment, making it a suitable questio
         #     if st.session_state.past != []:
         #         with st.expander("Short Q/A History", expanded=False):
         #             st.session_state.entity_memory.buffer
-        with st.expander("🛠️ Change the GPT model if you'd like ", expanded=False):
-            MODEL = st.selectbox(label='Model', options=['gpt-4', 'gpt-3.5-turbo','text-davinci-003','text-davinci-002','code-davinci-002'])
-            K = st.number_input(' (#)Summary of prompts to consider',min_value=3,max_value=1000)
+        with st.expander("🛠️ Change the history length if you'd like ", expanded=False):
+            # MODEL = st.selectbox(label='Model', options=['gpt-4', 'gpt-3.5-turbo','text-davinci-003','text-davinci-002','code-davinci-002'])
+            K = st.number_input(' (#)Summary of prompts to consider',min_value=3,max_value=20)
 
         # Set up the Streamlit app layout
         st.write("🤖 Clinical Pearls 🧠")
@@ -1000,7 +1004,7 @@ geographical association, and first-line treatment, making it a suitable questio
         openai.api_key = os.environ['OPENAI_API_KEY']
         llm = ChatOpenAI(temperature=0,
                     openai_api_key=openai.api_key, 
-                    model_name=MODEL, 
+                    model_name=st.session_state.model, 
                     verbose=False) 
 
 
