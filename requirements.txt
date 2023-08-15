@@ -20,7 +20,7 @@ importlib-metadata==6.6.0
 Jinja2==3.1.2
 joblib==1.2.0
 jsonschema==4.17.3
-langchain==0.0.170
+langchain==0.0.236
 markdown-it-py==2.2.0
 MarkupSafe==2.1.2
 marshmallow==3.19.0
